@@ -208,6 +208,8 @@ canvas{display:none}
 .deadline-box.expired{background:var(--rdim);border-color:var(--rbrd);color:var(--red)}
 .bet-manage-btn{background:var(--bdim);border:1px solid #2a4a7a;color:var(--blue);border-radius:8px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
 .bet-manage-btn:active{opacity:.7}
+.admin-remove-btn{margin-left:auto;background:var(--rdim);border:1px solid var(--rbrd);color:var(--red);border-radius:6px;padding:2px 7px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;flex-shrink:0;line-height:1.4}
+.admin-remove-btn:active{opacity:.6}
 </style>
 </head>
 <body>
@@ -922,12 +924,29 @@ function renderMdPool(g) {
   const el = document.getElementById('md-bl');
   if (!el) return;
   el.innerHTML = bets.length
-    ? bets.map(b => {
+    ? bets.map((b, i) => {
         const tn = b.t==='A' ? g.pA.n : g.pB.n;
-        return `<div class="bitem b${b.t.toLowerCase()}"><span class="bname">${b.n}</span><span class="btag">${tn}</span></div>`;
+        return `<div class="bitem b${b.t.toLowerCase()}" style="gap:6px">
+          <span class="bname">${b.n}</span>
+          <span class="btag">${tn}</span>
+          <button class="admin-remove-btn" onclick="adminRemoveBet(${i})" title="배팅 제거">✕</button>
+        </div>`;
       }).join('')
     : '<p style="color:var(--muted);font-size:12px;text-align:center;padding:8px">아직 배팅한 사람이 없어요</p>';
 }
+
+async function adminRemoveBet(idx) {
+  const g = allGames[curGameId];
+  if (!g) return;
+  const bets = [...(g.bets || [])];
+  const name = bets[idx]?.n;
+  if (!name) return;
+  if (!confirm(`"${name}"님의 배팅을 제거할까요?`)) return;
+  bets.splice(idx, 1);
+  await update(ref(db, `games/${curGameId}`), { bets });
+  toast(`🗑️ ${name}님 배팅 제거됨`);
+}
+window.adminRemoveBet = adminRemoveBet;
 
 function renderMdScore(g) {
   const sets = g.sets || [], target = targetSets(g);
