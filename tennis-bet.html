@@ -60,6 +60,7 @@ select.inp{appearance:none;cursor:pointer}
 .btn-blue{background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff}
 .btn-ghost{background:var(--s1);border:1px solid var(--border);color:var(--txt)}
 .btn-orange{background:linear-gradient(135deg,#f97316,#c2410c);color:#fff}
+.btn-blue{background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff}
 .btn-sm{width:auto;padding:7px 14px;font-size:12px;border-radius:8px}
 .btn-xs{width:auto;padding:5px 10px;font-size:11px;border-radius:6px;font-family:'Noto Sans KR',sans-serif;font-weight:700}
 .btn-row{display:flex;gap:8px;margin-top:10px}
@@ -197,6 +198,16 @@ canvas{display:none}
 .edit-row .inp{margin-bottom:0;flex:1}
 .section-header{display:flex;align-items:center;justify-content:space-between;margin:14px 14px 4px;padding:0 2px}
 .section-header h3{font-family:'Black Han Sans',sans-serif;font-size:14px;color:var(--muted);letter-spacing:.5px}
+
+/* ── 폴더 공유 ── */
+.folder-share-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--s1);border-radius:10px;margin-bottom:7px;border:1px solid var(--border)}
+.folder-share-item input[type=checkbox]{width:18px;height:18px;accent-color:var(--green);cursor:pointer;flex-shrink:0}
+.folder-share-name{flex:1;font-size:13px;font-weight:700}
+.folder-share-badge{font-size:10px;padding:2px 8px;border-radius:8px}
+.deadline-box{background:var(--odim);border:1px solid #5a3a0a;border-radius:10px;padding:10px 13px;margin-bottom:10px;font-size:12px;color:var(--orange);display:flex;align-items:center;gap:7px}
+.deadline-box.expired{background:var(--rdim);border-color:var(--rbrd);color:var(--red)}
+.bet-manage-btn{background:var(--bdim);border:1px solid #2a4a7a;color:var(--blue);border-radius:8px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
+.bet-manage-btn:active{opacity:.7}
 </style>
 </head>
 <body>
@@ -225,8 +236,11 @@ canvas{display:none}
     <div class="ct">📋 오늘의 경기 관리</div>
     <button class="btn btn-g" onclick="openAddGame()">＋ 새 게임 등록</button>
     <div style="margin-top:8px;display:flex;gap:8px">
-      <button class="btn btn-ghost btn-sm" style="flex:1" onclick="copyBetUrl()">🔗 배팅 링크 복사</button>
-      <button class="btn btn-ghost btn-sm" style="flex:1" onclick="showQR()">📱 QR코드</button>
+      <button class="btn btn-ghost btn-sm" style="flex:1" onclick="copyBetUrl()">🔗 전체 링크 복사</button>
+      <button class="btn btn-ghost btn-sm" style="flex:1" onclick="showQR()">📱 전체 QR</button>
+    </div>
+    <div style="margin-top:6px">
+      <button class="btn btn-blue" onclick="openFolderShare()">📂 선택 공유 URL/QR 생성</button>
     </div>
   </div>
 
@@ -301,6 +315,7 @@ canvas{display:none}
     <div id="md-settings-view" style="font-size:13px;color:var(--muted)">
       세트: <span id="md-maxS-view" style="color:var(--txt);font-weight:700"></span> &nbsp;|&nbsp;
       배팅: <span id="md-amt-view" style="color:var(--yellow);font-weight:700"></span>
+      <div id="md-deadline-view" style="margin-top:6px"></div>
     </div>
     <div id="md-settings-edit" class="hidden" style="margin-top:10px">
       <label class="lbl">세트 선취</label>
@@ -315,6 +330,9 @@ canvas{display:none}
         <option value="5000">5,000원</option>
         <option value="10000">10,000원</option>
       </select>
+      <label class="lbl">배팅 마감 일시 (선택)</label>
+      <input class="inp" id="ed-deadline" type="datetime-local">
+      <div style="font-size:11px;color:var(--muted);margin-top:-8px;margin-bottom:10px">비워두면 마감 없음</div>
       <div class="btn-row">
         <button class="btn btn-ghost" onclick="toggleEditSettings()">취소</button>
         <button class="btn btn-g" onclick="saveEditSettings()">저장</button>
@@ -425,6 +443,7 @@ canvas{display:none}
     </div>
     <div class="card" id="bd-form">
       <div class="ct">✋ 내 배팅</div>
+      <div id="bd-deadline-info" class="hidden" style="margin-bottom:10px"></div>
       <label class="lbl">내 이름</label>
       <input class="inp" id="bd-myname" type="text" placeholder="이름 입력" maxlength="8">
       <div class="tbtns">
@@ -432,13 +451,14 @@ canvas{display:none}
         <button class="tbtn" id="bd-btnB" onclick="bdSel('B')"><div id="bd-bnB">B팀</div><div class="tod" id="bd-odB">배당 —</div></button>
       </div>
       <div class="amtbox">배팅 금액: <strong id="bd-amt">5,000원</strong></div>
-      <button class="btn btn-g" onclick="bdPlace()">배팅하기 🎰</button>
+      <button class="btn btn-g" id="bd-place-btn" onclick="bdPlace()">배팅하기 🎰</button>
     </div>
     <div class="card hidden" id="bd-done">
       <div style="text-align:center;padding:14px 0">
         <div style="font-size:42px">✅</div>
         <div style="font-family:'Black Han Sans',sans-serif;font-size:17px;color:var(--green);margin-top:9px" id="bd-donemsg">배팅 완료!</div>
         <div style="font-size:12px;color:var(--muted);margin-top:5px">결과를 기다려주세요 🎾</div>
+        <button class="bet-manage-btn" style="margin-top:12px" onclick="openMyBetManage()">✏️ 배팅 수정/취소</button>
       </div>
     </div>
   </div>
@@ -512,6 +532,9 @@ canvas{display:none}
       <option value="3000">3,000원</option>
       <option value="1000">1,000원</option>
     </select>
+    <label class="lbl">배팅 마감 일시 (선택)</label>
+    <input class="inp" id="add-deadline" type="datetime-local">
+    <div style="font-size:11px;color:var(--muted);margin-top:-8px;margin-bottom:10px">설정 시 마감 후 배팅/수정 불가</div>
     <div class="btn-row">
       <button class="btn btn-ghost" onclick="closeM('modal-add')">취소</button>
       <button class="btn btn-g" onclick="addGame()">등록하기 →</button>
@@ -545,6 +568,60 @@ canvas{display:none}
   </div>
 </div>
 
+<!-- ── 폴더 공유 모달 ── -->
+<div class="mov" id="modal-folder-share">
+  <div class="msh">
+    <div class="mh"></div>
+    <div class="mti">📂 선택 게임 공유</div>
+    <div class="msub">공유할 게임을 선택하면<br>해당 게임만 보이는 URL과 QR코드를 생성합니다.</div>
+    <div id="folder-game-list" style="margin-bottom:14px"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeM('modal-folder-share')">취소</button>
+      <button class="btn btn-blue" onclick="genFolderShare()">🔗 생성하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 폴더 공유 결과 모달 ── -->
+<div class="mov" id="modal-folder-result">
+  <div class="msh">
+    <div class="mh"></div>
+    <div class="mti">📱 선택 공유 QR</div>
+    <div class="qrwrap"><img id="folder-qr-img" src="" alt="QR" width="200" height="200"><div class="qrurl" id="folder-qr-url"></div></div>
+    <div style="font-size:12px;color:var(--muted);text-align:center;margin-top:8px" id="folder-share-games-info"></div>
+    <div class="btn-row" style="margin-top:14px">
+      <button class="btn btn-ghost" onclick="closeM('modal-folder-result')">닫기</button>
+      <button class="btn btn-blue" onclick="copyFolderUrl()">🔗 링크 복사</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 내 배팅 관리 모달 (참가자) ── -->
+<div class="mov" id="modal-my-bet">
+  <div class="msh">
+    <div class="mh"></div>
+    <div class="mti">✏️ 내 배팅 관리</div>
+    <label class="lbl">이름으로 배팅 조회</label>
+    <input class="inp" id="mb-name" type="text" placeholder="배팅 시 입력한 이름" maxlength="8">
+    <div class="btn-row" style="margin-bottom:12px">
+      <button class="btn btn-g" onclick="lookupMyBet()">조회하기</button>
+    </div>
+    <div id="mb-result" class="hidden">
+      <div style="background:var(--s1);border-radius:11px;padding:14px;margin-bottom:12px" id="mb-info"></div>
+      <div class="tbtns" id="mb-change-btns" style="margin-bottom:9px">
+        <button class="tbtn" id="mb-btnA" onclick="mbSel('A')"></button>
+        <button class="tbtn" id="mb-btnB" onclick="mbSel('B')"></button>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-r" onclick="mbCancel()">🚫 배팅 취소</button>
+        <button class="btn btn-g" onclick="mbChange()">✅ 팀 변경</button>
+      </div>
+    </div>
+    <div id="mb-notfound" class="hidden" style="text-align:center;color:var(--red);font-size:13px;padding:10px">배팅 정보를 찾을 수 없어요.</div>
+    <button class="btn btn-ghost" style="margin-top:8px" onclick="closeM('modal-my-bet')">닫기</button>
+  </div>
+</div>
+
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp }  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -573,6 +650,8 @@ let curGameId  = null;       // 현재 보고 있는 게임 ID
 let bdTeam     = null;       // 참가자 선택 팀
 let bdDone     = false;      // 배팅 완료 여부
 let bdGameId   = null;       // 참가자가 보고 있는 게임 ID
+let sharedIds  = null;       // 공유 제한 게임 ID 배열
+let mbTeam     = null;       // 내 배팅 관리 선택 팀
 
 // ── 유틸 ──────────────────────────────────────
 const fmt   = n => Number(n).toLocaleString('ko-KR') + '원';
@@ -632,7 +711,11 @@ function phaseLabel(phase) {
 }
 
 // ── QR / URL ───────────────────────────────────
-function betUrl() { return window.location.href.split('?')[0] + '?mode=bet'; }
+function betUrl(ids) {
+  const base = window.location.href.split('?')[0] + '?mode=bet';
+  if (ids && ids.length) return base + '&games=' + ids.join(',');
+  return base;
+}
 function showQR() {
   const url = betUrl();
   document.getElementById('qr-img').src =
@@ -648,6 +731,48 @@ function copyBetUrl() {
 }
 window.showQR     = showQR;
 window.copyBetUrl = copyBetUrl;
+
+// ── 폴더(선택) 공유 ─────────────────────────────
+function openFolderShare() {
+  const ids = Object.keys(allGames || {});
+  const el = document.getElementById('folder-game-list');
+  if (!ids.length) { toast('❌ 등록된 게임이 없어요', true); return; }
+  const sorted = ids.sort((a,b)=>(allGames[b].createdAt||0)-(allGames[a].createdAt||0));
+  el.innerHTML = sorted.map(id => {
+    const g = allGames[id];
+    const [cls, lbl] = phaseBadge(g.phase);
+    return `<div class="folder-share-item">
+      <input type="checkbox" id="fsi-${id}" value="${id}">
+      <label for="fsi-${id}" class="folder-share-name" style="cursor:pointer">${g.pA.n} vs ${g.pB.n}</label>
+      <span class="badge ${cls} folder-share-badge">${lbl}</span>
+    </div>`;
+  }).join('');
+  openM('modal-folder-share');
+}
+window.openFolderShare = openFolderShare;
+
+let folderShareUrl = '';
+function genFolderShare() {
+  const checked = [...document.querySelectorAll('#folder-game-list input[type=checkbox]:checked')].map(e=>e.value);
+  if (!checked.length) { toast('❌ 게임을 1개 이상 선택하세요', true); return; }
+  const url = betUrl(checked);
+  folderShareUrl = url;
+  document.getElementById('folder-qr-img').src =
+    `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}&bgcolor=111a1e&color=5ba3f5&margin=10`;
+  document.getElementById('folder-qr-url').textContent = url;
+  const names = checked.map(id => allGames[id] ? `${allGames[id].pA.n} vs ${allGames[id].pB.n}` : id);
+  document.getElementById('folder-share-games-info').textContent = `📂 공유 게임: ${names.join(', ')}`;
+  closeM('modal-folder-share');
+  openM('modal-folder-result');
+}
+window.genFolderShare = genFolderShare;
+
+function copyFolderUrl() {
+  if (navigator.clipboard) navigator.clipboard.writeText(folderShareUrl).then(()=>toast('🔗 링크 복사됨!'));
+  else toast(folderShareUrl);
+  closeM('modal-folder-result');
+}
+window.copyFolderUrl = copyFolderUrl;
 
 // ──────────────────────────────────────────────
 // MASTER: 게임 목록
@@ -707,6 +832,7 @@ async function addGame() {
   const nA = document.getElementById('add-nA').value.trim();
   const nB = document.getElementById('add-nB').value.trim();
   if (!nA || !nB) { toast('❌ 선수 이름을 입력하세요', true); return; }
+  const deadlineVal = document.getElementById('add-deadline').value;
   const gameData = {
     phase: 'bet',
     pA: { n:nA, w:parseInt(document.getElementById('add-wA').value)||0, l:parseInt(document.getElementById('add-lA').value)||0 },
@@ -714,7 +840,8 @@ async function addGame() {
     maxS: parseInt(document.getElementById('add-sets').value),
     amt:  parseInt(document.getElementById('add-amt').value),
     bets: [], sets: [], winner: null,
-    createdAt: Date.now()
+    createdAt: Date.now(),
+    deadline: deadlineVal ? new Date(deadlineVal).getTime() : null
   };
   await push(GAMES, gameData);
   closeM('modal-add');
@@ -750,6 +877,15 @@ function renderMasterDetail(g) {
   const setLabels = { 4:'4세트 선취', 6:'6세트 선취' };
   se('md-maxS-view', setLabels[g.maxS] || g.maxS + '세트');
   se('md-amt-view', fmt(g.amt));
+  // 마감 표시
+  const dlEl = document.getElementById('md-deadline-view');
+  if (dlEl) {
+    if (g.deadline) {
+      const expired = Date.now() > g.deadline;
+      const dl = new Date(g.deadline);
+      dlEl.innerHTML = `<span style="color:${expired?'var(--red)':'var(--orange)'}">⏰ 배팅 마감: ${dl.toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})} ${expired?'(마감됨)':'(진행 중)'}</span>`;
+    } else { dlEl.innerHTML = ''; }
+  }
 
   // 카드 표시/숨김
   const isResult = g.phase === 'result';
@@ -895,6 +1031,11 @@ function toggleEditSettings() {
   if (isHidden) {
     document.getElementById('ed-sets').value = g.maxS;
     document.getElementById('ed-amt').value = g.amt;
+    const deadlineEl = document.getElementById('ed-deadline');
+    if (g.deadline) {
+      const d = new Date(g.deadline);
+      deadlineEl.value = new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().slice(0,16);
+    } else { deadlineEl.value = ''; }
     show('md-settings-edit');
   } else {
     hide('md-settings-edit');
@@ -903,9 +1044,11 @@ function toggleEditSettings() {
 window.toggleEditSettings = toggleEditSettings;
 
 async function saveEditSettings() {
+  const deadlineVal = document.getElementById('ed-deadline').value;
   await update(ref(db, `games/${curGameId}`), {
     maxS: parseInt(document.getElementById('ed-sets').value),
-    amt:  parseInt(document.getElementById('ed-amt').value)
+    amt:  parseInt(document.getElementById('ed-amt').value),
+    deadline: deadlineVal ? new Date(deadlineVal).getTime() : null
   });
   hide('md-settings-edit');
   toast('✅ 설정 저장됨');
@@ -983,7 +1126,10 @@ function renderBetList(games) {
   const now = new Date().toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit'});
   se('bl-updated', now + ' 기준');
 
-  const active = ids.filter(id => games[id].phase !== 'done');
+  let active = ids.filter(id => games[id].phase !== 'done');
+  if (sharedIds && sharedIds.length) {
+    active = active.filter(id => sharedIds.includes(id));
+  }
   if (!active.length) {
     el.innerHTML = `<div class="empty-state"><div class="wi">⏳</div><p style="font-size:13px;color:var(--muted);margin-top:12px">진행 중인 게임이 없어요.<br>운영자가 등록하면 나타납니다.</p></div>`;
     return;
@@ -996,6 +1142,10 @@ function renderBetList(games) {
     const sA = (g.sets||[]).filter(s=>s.a>s.b).length, sB = (g.sets||[]).filter(s=>s.b>s.a).length;
     const scoreDisp = (g.phase==='live'||g.phase==='result')
       ? `<span style="font-weight:700;color:var(--green)">${sA}</span><span style="color:var(--muted)"> : </span><span style="font-weight:700;color:var(--red)">${sB}</span>` : '';
+    const dlExpired = g.deadline && Date.now() > g.deadline;
+    const dlTag = g.deadline
+      ? `<span class="gc-tag" style="${dlExpired?'color:var(--red)':'color:var(--orange)'}">⏰ ${dlExpired?'마감됨':new Date(g.deadline).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})+' 마감'}</span>`
+      : '';
     return `<div class="game-card phase-${g.phase}" onclick="openBetDetail('${id}')">
       <div class="gc-top">
         <span class="gc-title">${g.pA.n} vs ${g.pB.n}</span>
@@ -1009,6 +1159,7 @@ function renderBetList(games) {
         <span class="gc-tag">🎰 ${bets.length}명 배팅</span>
         <span class="gc-tag">💰 ${fmt(od.tot)}</span>
         <span class="gc-tag">🎾 ${g.maxS}세트 선취</span>
+        ${dlTag}
       </div>
     </div>`;
   }).join('');
@@ -1066,6 +1217,21 @@ function renderBdBet(g) {
   se('bd-odA',od.oA!=='—'?`배당 x${od.oA}`:'배당 —');
   se('bd-odB',od.oB!=='—'?`배당 x${od.oB}`:'배당 —');
   renderBdPool('bd-',g,true);
+  // 마감 표시
+  const dlEl = document.getElementById('bd-deadline-info');
+  if (dlEl && g.deadline) {
+    const expired = Date.now() > g.deadline;
+    const dlStr = new Date(g.deadline).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+    dlEl.className = `deadline-box${expired?' expired':''}`;
+    dlEl.innerHTML = expired ? `⛔ 배팅 마감됨 (${dlStr})` : `⏰ 배팅 마감: ${dlStr}`;
+    show('bd-deadline-info');
+    const btn = document.getElementById('bd-place-btn');
+    if (btn) { btn.disabled=expired; btn.style.opacity=expired?'0.4':'1'; btn.textContent=expired?'배팅 마감됨 ⛔':'배팅하기 🎰'; }
+  } else if (dlEl) {
+    hide('bd-deadline-info');
+    const btn = document.getElementById('bd-place-btn');
+    if (btn) { btn.disabled=false; btn.style.opacity='1'; btn.textContent='배팅하기 🎰'; }
+  }
 }
 
 function renderBdLive(g) {
@@ -1116,6 +1282,11 @@ function renderBdLPool(px, g, anon) {
     || '<p style="color:var(--muted);font-size:12px;text-align:center;padding:8px">배팅 없음</p>';
 }
 
+// ── 마감 체크 유틸 ─────────────────────────────
+function isDeadlinePassed(g) {
+  return !!(g.deadline && Date.now() > g.deadline);
+}
+
 // ── 배팅 등록 ──────────────────────────────────
 function bdSel(t) {
   bdTeam = t;
@@ -1133,6 +1304,7 @@ async function bdPlace() {
   const snap = await get(ref(db, `games/${bdGameId}`));
   const cur  = snap.val();
   if (!cur || cur.phase!=='bet') { toast('❌ 배팅이 마감됐어요', true); return; }
+  if (isDeadlinePassed(cur)) { toast('⏰ 배팅 마감 시간이 지났어요', true); return; }
   const bets = cur.bets||[];
   if (bets.find(b=>b.n===name)) { toast('⚠️ 이미 같은 이름으로 배팅됐어요', true); return; }
   bets.push({ n:name, t:bdTeam, ts:Date.now() });
@@ -1144,6 +1316,88 @@ async function bdPlace() {
   toast(`✅ ${name}님 배팅 완료!`);
 }
 window.bdPlace = bdPlace;
+
+// ──────────────────────────────────────────────
+// 내 배팅 관리 (참가자)
+// ──────────────────────────────────────────────
+function openMyBetManage() {
+  document.getElementById('mb-name').value = document.getElementById('bd-myname')?.value || '';
+  hide('mb-result'); hide('mb-notfound');
+  openM('modal-my-bet');
+}
+window.openMyBetManage = openMyBetManage;
+
+async function lookupMyBet() {
+  const name = document.getElementById('mb-name').value.trim();
+  if (!name) { toast('❌ 이름을 입력하세요', true); return; }
+  const snap = await get(ref(db, `games/${bdGameId}`));
+  const g = snap.val();
+  if (!g) { hide('mb-result'); show('mb-notfound'); return; }
+  const bets = g.bets || [];
+  const myBet = bets.find(b => b.n === name);
+  if (!myBet) { hide('mb-result'); show('mb-notfound'); return; }
+  const tn = myBet.t==='A' ? g.pA.n : g.pB.n;
+  const expired = isDeadlinePassed(g);
+  document.getElementById('mb-info').innerHTML = `
+    <div style="font-size:13px;color:var(--muted);margin-bottom:4px">현재 배팅</div>
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:16px;color:${myBet.t==='A'?'var(--green)':'var(--red)'}">${name} → ${tn}팀</div>
+    ${expired ? '<div style="color:var(--red);font-size:11px;margin-top:4px">⛔ 마감됨 — 수정/취소 불가</div>' : ''}`;
+  document.getElementById('mb-btnA').innerHTML = `<div>${g.pA.n}</div>`;
+  document.getElementById('mb-btnB').innerHTML = `<div>${g.pB.n}</div>`;
+  mbTeam = myBet.t;
+  document.getElementById('mb-btnA').className = 'tbtn'+(mbTeam==='A'?' sA':'');
+  document.getElementById('mb-btnB').className = 'tbtn'+(mbTeam==='B'?' sB':'');
+  const btnsEl = document.getElementById('mb-change-btns');
+  const actionBtns = document.querySelectorAll('#modal-my-bet .btn-row .btn');
+  btnsEl.style.opacity = expired ? '0.4' : '1';
+  btnsEl.style.pointerEvents = expired ? 'none' : '';
+  actionBtns.forEach(b => { b.disabled = expired; b.style.opacity = expired ? '0.4' : '1'; });
+  show('mb-result'); hide('mb-notfound');
+}
+window.lookupMyBet = lookupMyBet;
+
+function mbSel(t) {
+  mbTeam = t;
+  document.getElementById('mb-btnA').className = 'tbtn'+(t==='A'?' sA':'');
+  document.getElementById('mb-btnB').className = 'tbtn'+(t==='B'?' sB':'');
+}
+window.mbSel = mbSel;
+
+async function mbCancel() {
+  const name = document.getElementById('mb-name').value.trim();
+  const snap = await get(ref(db, `games/${bdGameId}`));
+  const g = snap.val();
+  if (!g) return;
+  if (isDeadlinePassed(g)) { toast('⛔ 마감됨 — 취소 불가', true); return; }
+  const bets = (g.bets || []).filter(b => b.n !== name);
+  await update(ref(db, `games/${bdGameId}`), { bets });
+  bdDone = false;
+  closeM('modal-my-bet');
+  show('bd-form'); hide('bd-done');
+  document.getElementById('bd-myname').value = name;
+  toast(`🚫 ${name}님 배팅 취소됨`);
+}
+window.mbCancel = mbCancel;
+
+async function mbChange() {
+  const name = document.getElementById('mb-name').value.trim();
+  if (!mbTeam) { toast('❌ 팀을 선택하세요', true); return; }
+  const snap = await get(ref(db, `games/${bdGameId}`));
+  const g = snap.val();
+  if (!g) return;
+  if (isDeadlinePassed(g)) { toast('⛔ 마감됨 — 수정 불가', true); return; }
+  const bets = g.bets || [];
+  const idx = bets.findIndex(b => b.n === name);
+  if (idx === -1) { toast('❌ 배팅 정보를 찾을 수 없어요', true); return; }
+  bets[idx].t = mbTeam;
+  bets[idx].ts = Date.now();
+  await update(ref(db, `games/${bdGameId}`), { bets });
+  const tn = mbTeam==='A' ? g.pA.n : g.pB.n;
+  closeM('modal-my-bet');
+  se('bd-donemsg', `${tn}팀으로 변경 완료! 🎾`);
+  toast(`✅ ${name}님 → ${tn}팀으로 변경됨`);
+}
+window.mbChange = mbChange;
 
 // ──────────────────────────────────────────────
 // Firebase 실시간 리스너
@@ -1237,6 +1491,8 @@ function confetti() {
 (()=>{
   const p = new URLSearchParams(window.location.search);
   mode = p.get('mode')==='bet' ? 'betonly' : 'master';
+  const gamesParam = p.get('games');
+  if (gamesParam) sharedIds = gamesParam.split(',').filter(Boolean);
   showView(mode==='betonly' ? 'v-bet-list' : 'v-master-list');
 })();
 
