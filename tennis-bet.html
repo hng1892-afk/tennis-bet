@@ -1168,10 +1168,19 @@ function renderBetList(games) {
 // ── 참가자 상세 ────────────────────────────────
 function openBetDetail(gameId) {
   bdGameId = gameId;
-  bdDone   = false;
   bdTeam   = null;
   const g  = allGames[gameId];
   se('bd-title', `${g.pA.n} vs ${g.pB.n}`);
+  // localStorage에 저장된 이름으로 이미 배팅했는지 확인
+  const savedName = localStorage.getItem('bet-name-' + gameId);
+  const bets = g.bets || [];
+  const myExisting = savedName && bets.find(b => b.n === savedName);
+  if (myExisting) {
+    bdDone = true;
+    document.getElementById('bd-myname').value = savedName;
+  } else {
+    bdDone = false;
+  }
   renderBetDetail(g);
   showView('v-bet-detail');
 }
@@ -1191,7 +1200,19 @@ function renderBetDetail(g) {
   if (g.phase==='bet') {
     show('bd-bview');
     renderBdBet(g);
-    if (!bdDone) { show('bd-form'); hide('bd-done'); }
+    if (bdDone) {
+      // 이미 배팅한 경우 - 배팅 완료 카드 표시
+      const bets = g.bets || [];
+      const savedName = localStorage.getItem('bet-name-' + bdGameId);
+      const myBet = savedName && bets.find(b => b.n === savedName);
+      if (myBet) {
+        const tn = myBet.t==='A' ? g.pA.n : g.pB.n;
+        se('bd-donemsg', `${tn}팀에 배팅 완료! 🎾`);
+      }
+      hide('bd-form'); show('bd-done');
+    } else {
+      show('bd-form'); hide('bd-done');
+    }
   } else if (g.phase==='live') {
     show('bd-lview');
     renderBdLive(g);
@@ -1310,6 +1331,7 @@ async function bdPlace() {
   bets.push({ n:name, t:bdTeam, ts:Date.now() });
   await update(ref(db, `games/${bdGameId}`), { bets });
   bdDone = true;
+  localStorage.setItem('bet-name-' + bdGameId, name);
   const tn = bdTeam==='A'?cur.pA.n:cur.pB.n;
   se('bd-donemsg', `${tn}팀에 배팅 완료! 🎾`);
   hide('bd-form'); show('bd-done');
@@ -1321,9 +1343,14 @@ window.bdPlace = bdPlace;
 // 내 배팅 관리 (참가자)
 // ──────────────────────────────────────────────
 function openMyBetManage() {
-  document.getElementById('mb-name').value = document.getElementById('bd-myname')?.value || '';
+  // localStorage 저장 이름 우선, 없으면 입력창 이름
+  const saved = localStorage.getItem('bet-name-' + bdGameId);
+  const typed = document.getElementById('bd-myname')?.value || '';
+  document.getElementById('mb-name').value = saved || typed;
   hide('mb-result'); hide('mb-notfound');
   openM('modal-my-bet');
+  // 이름이 있으면 자동 조회
+  if (saved || typed) lookupMyBet();
 }
 window.openMyBetManage = openMyBetManage;
 
@@ -1372,6 +1399,7 @@ async function mbCancel() {
   const bets = (g.bets || []).filter(b => b.n !== name);
   await update(ref(db, `games/${bdGameId}`), { bets });
   bdDone = false;
+  localStorage.removeItem('bet-name-' + bdGameId);
   closeM('modal-my-bet');
   show('bd-form'); hide('bd-done');
   document.getElementById('bd-myname').value = name;
@@ -1393,7 +1421,9 @@ async function mbChange() {
   bets[idx].ts = Date.now();
   await update(ref(db, `games/${bdGameId}`), { bets });
   const tn = mbTeam==='A' ? g.pA.n : g.pB.n;
+  localStorage.setItem('bet-name-' + bdGameId, name);
   closeM('modal-my-bet');
+  hide('bd-form'); show('bd-done');
   se('bd-donemsg', `${tn}팀으로 변경 완료! 🎾`);
   toast(`✅ ${name}님 → ${tn}팀으로 변경됨`);
 }
