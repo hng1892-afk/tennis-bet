@@ -6,373 +6,552 @@
 <title>🎾 테니스 배팅</title>
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#080c08;--s1:#0e150e;--s2:#141f14;--s3:#1a2b1a;--green:#3ddc84;--greendim:#134826;--yellow:#f5c518;--red:#ff5f5f;--reddim:#4a1515;--blue:#60a5fa;--txt:#dff0df;--muted:#5a7060;--border:#1e2e1e}
+:root{
+  --bg:#06090a;--s1:#0c1215;--s2:#111a1e;--s3:#172028;
+  --green:#3ddc84;--gdim:#0d3320;--gbrd:#1a5c3a;
+  --yellow:#f5c518;--ydim:#2a2208;
+  --red:#ff5f5f;--rdim:#2a0d0d;--rbrd:#6a1a1a;
+  --blue:#5ba3f5;--bdim:#0d1f3a;
+  --orange:#ff9f43;--odim:#2a1800;
+  --txt:#d8eef0;--muted:#4a6872;--border:#1a2830;
+  --card-hover:#162025;
+}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;max-width:500px;margin:0 auto;padding-bottom:100px;overflow-x:hidden}
-.screen{display:none}.screen.on{display:block}
-.hdr{position:sticky;top:0;z-index:100;background:rgba(8,12,8,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;gap:10px}
-.logo{font-family:'Black Han Sans',sans-serif;font-size:20px;color:var(--green);letter-spacing:-.5px}.logo em{color:var(--yellow);font-style:normal}
-.badge{margin-left:auto;font-size:10px;font-weight:700;letter-spacing:.8px;padding:3px 10px;border-radius:20px;text-transform:uppercase}
-.badge-setup{background:var(--s3);color:var(--green);border:1px solid var(--greendim)}
-.badge-bet{background:#0f1f3a;color:var(--blue);border:1px solid #1a3a6a}
-.badge-live{background:var(--reddim);color:var(--red);border:1px solid #7a2020;animation:lp 1.4s ease infinite}
-.badge-done{background:#2a2a08;color:var(--yellow);border:1px solid #4a4a10}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;max-width:520px;margin:0 auto;padding-bottom:110px;overflow-x:hidden}
+
+/* ── 공통 ── */
+.hidden{display:none!important}
+.view{display:none}.view.on{display:block}
+
+/* ── 헤더 ── */
+.hdr{position:sticky;top:0;z-index:200;background:rgba(6,9,10,.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:13px 18px;display:flex;align-items:center;gap:10px}
+.logo{font-family:'Black Han Sans',sans-serif;font-size:21px;color:var(--green);letter-spacing:-.5px}.logo em{color:var(--yellow);font-style:normal}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.badge{font-size:10px;font-weight:700;letter-spacing:.8px;padding:3px 10px;border-radius:20px;text-transform:uppercase;white-space:nowrap}
+.b-green{background:var(--gdim);color:var(--green);border:1px solid var(--gbrd)}
+.b-blue{background:var(--bdim);color:var(--blue);border:1px solid #2a4a7a}
+.b-red{background:var(--rdim);color:var(--red);border:1px solid var(--rbrd);animation:lp 1.4s ease infinite}
+.b-yellow{background:var(--ydim);color:var(--yellow);border:1px solid #5a4a10}
+.b-orange{background:var(--odim);color:var(--orange);border:1px solid #5a3a0a}
+.b-gray{background:#1a2020;color:var(--muted);border:1px solid #2a3a3a}
 @keyframes lp{0%,100%{opacity:1}50%{opacity:.5}}
-.syncdot{width:8px;height:8px;border-radius:50%;background:#333;display:inline-block;margin-left:4px;transition:background .4s}
-.syncdot.on{background:var(--green);box-shadow:0 0 6px var(--green)}
-.card{background:var(--s2);border:1px solid var(--border);border-radius:18px;padding:20px;margin:14px 16px}
-.ct{font-family:'Black Han Sans',sans-serif;font-size:15px;color:var(--green);margin-bottom:16px;letter-spacing:.4px}
+.syncdot{width:8px;height:8px;border-radius:50%;background:#1a2830;flex-shrink:0;transition:all .4s}
+.syncdot.on{background:var(--green);box-shadow:0 0 7px var(--green)}
+
+/* ── 카드 ── */
+.card{background:var(--s2);border:1px solid var(--border);border-radius:18px;padding:18px;margin:12px 14px}
+.card-sm{padding:14px}
+.ct{font-family:'Black Han Sans',sans-serif;font-size:15px;color:var(--green);margin-bottom:14px;letter-spacing:.3px;display:flex;align-items:center;gap:8px}
+.ct-right{margin-left:auto;font-family:'Noto Sans KR',sans-serif;font-size:11px;color:var(--muted);font-weight:400}
+
+/* ── 폼 ── */
 .lbl{font-size:11px;color:var(--muted);margin-bottom:5px;display:block;letter-spacing:.3px;font-weight:500}
-.inp{width:100%;background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--txt);font-size:15px;font-family:'Noto Sans KR',sans-serif;outline:none;transition:border-color .2s;margin-bottom:12px}.inp:focus{border-color:var(--green)}
-select.inp{appearance:none}
-.btn{width:100%;padding:14px;border-radius:12px;border:none;font-size:16px;font-family:'Black Han Sans',sans-serif;cursor:pointer;letter-spacing:.5px;transition:transform .1s,opacity .1s}.btn:active{transform:scale(.97);opacity:.85}
-.btn-g{background:linear-gradient(135deg,#22c55e,#15803d);color:#fff}
+.inp{width:100%;background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--txt);font-size:15px;font-family:'Noto Sans KR',sans-serif;outline:none;transition:border-color .2s;margin-bottom:11px}
+.inp:focus{border-color:var(--green)}.inp:last-child{margin-bottom:0}
+select.inp{appearance:none;cursor:pointer}
+.row2{display:flex;gap:10px}.row2>div{flex:1}
+
+/* ── 버튼 ── */
+.btn{width:100%;padding:13px;border-radius:11px;border:none;font-size:15px;font-family:'Black Han Sans',sans-serif;cursor:pointer;letter-spacing:.5px;transition:transform .1s,opacity .15s,box-shadow .2s}
+.btn:active{transform:scale(.97);opacity:.82}
+.btn-g{background:linear-gradient(135deg,#22c55e,#15803d);color:#fff;box-shadow:0 2px 12px #22c55e22}
 .btn-r{background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff}
 .btn-gold{background:linear-gradient(135deg,#f5c518,#d97706);color:#1a1000}
+.btn-blue{background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff}
 .btn-ghost{background:var(--s1);border:1px solid var(--border);color:var(--txt)}
-.btn-sm{width:auto;padding:8px 16px;font-size:13px;border-radius:8px}
-.matchup{display:flex;align-items:center;gap:8px;margin-bottom:14px}
-.pbox{flex:1;background:var(--s1);border-radius:12px;padding:14px 10px;text-align:center;border:2px solid var(--border)}
-.pbox.pa{border-color:#22c55e30}.pbox.pb{border-color:#ef444430}
-.pname{font-family:'Black Han Sans',sans-serif;font-size:17px}
+.btn-orange{background:linear-gradient(135deg,#f97316,#c2410c);color:#fff}
+.btn-sm{width:auto;padding:7px 14px;font-size:12px;border-radius:8px}
+.btn-xs{width:auto;padding:5px 10px;font-size:11px;border-radius:6px;font-family:'Noto Sans KR',sans-serif;font-weight:700}
+.btn-row{display:flex;gap:8px;margin-top:10px}
+.btn-row .btn{flex:1}
+
+/* ── 게임 카드 (목록) ── */
+.game-card{background:var(--s2);border:1px solid var(--border);border-radius:16px;padding:16px;margin:10px 14px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.game-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:16px 0 0 16px}
+.game-card.phase-bet::before{background:var(--blue)}
+.game-card.phase-live::before{background:var(--red)}
+.game-card.phase-done::before{background:var(--muted)}
+.game-card.phase-result::before{background:var(--yellow)}
+.game-card:active{background:var(--card-hover)}
+.gc-top{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.gc-num{font-family:'Black Han Sans',sans-serif;font-size:11px;color:var(--muted)}
+.gc-title{font-family:'Black Han Sans',sans-serif;font-size:16px;flex:1}
+.gc-score{font-family:'Black Han Sans',sans-serif;font-size:13px}
+.gc-players{display:flex;align-items:center;gap:6px;font-size:13px}
+.gc-pa{color:var(--green);font-weight:700}.gc-vs{color:var(--muted);font-size:11px}
+.gc-pb{color:var(--red);font-weight:700}
+.gc-meta{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.gc-tag{font-size:10px;padding:2px 8px;border-radius:8px;background:var(--s1);color:var(--muted);border:1px solid var(--border)}
+
+/* ── 매치업 ── */
+.matchup{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.pbox{flex:1;background:var(--s1);border-radius:11px;padding:12px 8px;text-align:center;border:2px solid var(--border)}
+.pbox.pa{border-color:#22c55e28}.pbox.pb{border-color:#ef444428}
+.pname{font-family:'Black Han Sans',sans-serif;font-size:16px}
 .pa .pname{color:var(--green)}.pb .pname{color:var(--red)}
-.prec{font-size:11px;color:var(--muted);margin-top:3px}
-.vs{font-family:'Black Han Sans',sans-serif;font-size:18px;color:var(--yellow)}
-.probbar{height:9px;border-radius:9px;background:var(--s1);overflow:hidden;position:relative;margin:10px 0 7px}
-.pba{height:100%;border-radius:9px;background:linear-gradient(90deg,#22c55e,#4ade80);transition:width .8s cubic-bezier(.34,1.56,.64,1)}
-.pbb{position:absolute;right:0;top:0;height:100%;border-radius:9px;background:linear-gradient(270deg,#ef4444,#f87171);transition:width .8s cubic-bezier(.34,1.56,.64,1)}
-.plbls{display:flex;justify-content:space-between;font-size:13px;font-weight:700}
+.prec{font-size:11px;color:var(--muted);margin-top:2px}
+.vs-txt{font-family:'Black Han Sans',sans-serif;font-size:17px;color:var(--yellow)}
+
+/* ── 승률 바 ── */
+.probbar{height:8px;border-radius:8px;background:var(--s1);overflow:hidden;position:relative;margin:8px 0 6px}
+.pba{height:100%;border-radius:8px;background:linear-gradient(90deg,#22c55e,#4ade80);transition:width .8s cubic-bezier(.34,1.56,.64,1)}
+.pbb{position:absolute;right:0;top:0;height:100%;border-radius:8px;background:linear-gradient(270deg,#ef4444,#f87171);transition:width .8s cubic-bezier(.34,1.56,.64,1)}
+.plbls{display:flex;justify-content:space-between;font-size:12px;font-weight:700}
 .pa-t{color:var(--green)}.pb-t{color:var(--red)}
-.poolrow{display:flex;gap:10px;margin-bottom:12px}
-.poolbox{flex:1;background:var(--s1);border-radius:12px;padding:12px 10px;text-align:center;border:1px solid var(--border)}
-.poollbl{font-size:11px;color:var(--muted);margin-bottom:3px}
-.poolamt{font-family:'Black Han Sans',sans-serif;font-size:17px}
+
+/* ── 풀 ── */
+.poolrow{display:flex;gap:8px;margin-bottom:10px}
+.poolbox{flex:1;background:var(--s1);border-radius:11px;padding:11px 8px;text-align:center;border:1px solid var(--border)}
+.poollbl{font-size:11px;color:var(--muted);margin-bottom:2px}
+.poolamt{font-family:'Black Han Sans',sans-serif;font-size:16px}
 .pa-pool .poolamt{color:var(--green)}.pb-pool .poolamt{color:var(--red)}
-.poolret{font-size:11px;color:var(--yellow);margin-top:3px}
+.poolret{font-size:10px;color:var(--yellow);margin-top:2px}
+
+/* ── 배팅 목록 ── */
 .blist{margin-top:4px}
-.bitem{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:8px;background:var(--s1);margin-bottom:5px;border-left:3px solid}
+.bitem{display:flex;align-items:center;justify-content:space-between;padding:8px 11px;border-radius:8px;background:var(--s1);margin-bottom:4px;border-left:3px solid}
 .bitem.ba{border-color:var(--green)}.bitem.bb{border-color:var(--red)}
-.bname{font-weight:700;font-size:14px}
-.btag{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700}
-.ba .btag{background:#0d2a1a;color:var(--green)}.bb .btag{background:#2a0d0d;color:var(--red)}
-.tbtns{display:flex;gap:10px;margin-bottom:10px}
-.tbtn{flex:1;padding:16px 8px;border-radius:12px;border:2px solid var(--border);background:var(--s1);color:var(--txt);font-family:'Black Han Sans',sans-serif;font-size:15px;cursor:pointer;text-align:center;transition:all .2s}
-.tbtn .tod{font-size:10px;font-family:'Noto Sans KR',sans-serif;font-weight:400;margin-top:4px;color:var(--muted)}
-.tbtn.sA{border-color:var(--green);background:#0d2a1a;color:var(--green)}.tbtn.sA .tod{color:var(--green)}
-.tbtn.sB{border-color:var(--red);background:#2a0d0d;color:var(--red)}.tbtn.sB .tod{color:var(--red)}
-.amtbox{background:var(--s1);border-radius:10px;padding:11px 14px;font-size:13px;color:var(--muted);text-align:center;margin-bottom:12px}
-.amtbox strong{color:var(--yellow);font-size:15px}
-.sbrd{display:flex;align-items:center;gap:10px}
+.bname{font-weight:700;font-size:13px}
+.btag{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:700}
+.ba .btag{background:var(--gdim);color:var(--green)}.bb .btag{background:var(--rdim);color:var(--red)}
+
+/* ── 배팅 버튼 ── */
+.tbtns{display:flex;gap:9px;margin-bottom:9px}
+.tbtn{flex:1;padding:14px 6px;border-radius:11px;border:2px solid var(--border);background:var(--s1);color:var(--txt);font-family:'Black Han Sans',sans-serif;font-size:14px;cursor:pointer;text-align:center;transition:all .2s}
+.tbtn .tod{font-size:10px;font-family:'Noto Sans KR',sans-serif;font-weight:400;margin-top:3px;color:var(--muted)}
+.tbtn.sA{border-color:var(--green);background:var(--gdim);color:var(--green)}.tbtn.sA .tod{color:var(--green)}
+.tbtn.sB{border-color:var(--red);background:var(--rdim);color:var(--red)}.tbtn.sB .tod{color:var(--red)}
+.amtbox{background:var(--s1);border-radius:9px;padding:10px 12px;font-size:12px;color:var(--muted);text-align:center;margin-bottom:11px}
+.amtbox strong{color:var(--yellow);font-size:14px}
+
+/* ── 스코어보드 ── */
+.sbrd{display:flex;align-items:center;gap:8px}
 .scpl{flex:1;text-align:center}
-.scn{font-size:12px;color:var(--muted);margin-bottom:6px}
-.snum{font-family:'Black Han Sans',sans-serif;font-size:52px;line-height:1}
+.scn{font-size:11px;color:var(--muted);margin-bottom:4px}
+.snum{font-family:'Black Han Sans',sans-serif;font-size:50px;line-height:1}
 .snum.a{color:var(--green)}.snum.b{color:var(--red)}
-.spips{display:flex;justify-content:center;gap:5px;margin-top:5px;flex-wrap:wrap}
-.spip{font-size:11px;padding:2px 7px;border-radius:5px;background:var(--s1);color:var(--muted)}
-.spip.w{color:var(--green);font-weight:700}
-.svs{color:var(--muted);font-size:20px;font-weight:700}
-.sinrow{display:flex;align-items:center;gap:8px;background:var(--s1);border-radius:12px;padding:12px 14px;margin-bottom:10px}
-.sinrow label{font-size:12px;color:var(--muted);width:58px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sinp{width:60px!important;text-align:center;padding:8px!important;font-size:20px!important;font-family:'Black Han Sans',sans-serif;margin:0!important}
-.sdash{color:var(--muted);font-size:20px;font-weight:700}
-.wbanner{text-align:center;padding:24px 20px 8px}
-.we{font-size:52px;margin-bottom:8px}
-.wn{font-family:'Black Han Sans',sans-serif;font-size:28px;color:var(--yellow)}
-.ws{font-size:13px;color:var(--muted);margin-top:5px}
-.ritem{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-radius:10px;background:var(--s1);margin-bottom:7px}
-.ritem.won{background:#0a1f0a;border:1px solid #1e4a1e}.ritem.lost{background:#1f0a0a;border:1px solid #4a1e1e}
+.spips{display:flex;justify-content:center;gap:4px;margin-top:4px;flex-wrap:wrap}
+.spip{font-size:10px;padding:2px 6px;border-radius:5px;background:var(--s1);color:var(--muted);border:1px solid var(--border)}
+.spip.w{color:var(--green);border-color:var(--gbrd);background:var(--gdim)}
+.svs{color:var(--muted);font-size:18px;font-weight:700}
+.target-info{text-align:center;font-size:11px;color:var(--muted);padding:7px 10px;background:var(--s1);border-radius:8px;margin-bottom:10px;border:1px solid var(--border)}
+
+/* ── 세트 입력 ── */
+.sinrow{display:flex;align-items:center;gap:8px;background:var(--s1);border-radius:11px;padding:11px 13px;margin-bottom:9px}
+.sinrow label{font-size:11px;color:var(--muted);width:50px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sinp{width:55px!important;text-align:center;padding:7px!important;font-size:19px!important;font-family:'Black Han Sans',sans-serif;margin:0!important}
+.sdash{color:var(--muted);font-size:18px;font-weight:700}
+
+/* ── 결과 ── */
+.wbanner{text-align:center;padding:20px 20px 6px}
+.we{font-size:48px;margin-bottom:6px}
+.wn{font-family:'Black Han Sans',sans-serif;font-size:26px;color:var(--yellow)}
+.ws{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5}
+.ritem{display:flex;align-items:center;justify-content:space-between;padding:10px 13px;border-radius:9px;background:var(--s1);margin-bottom:6px}
+.ritem.won{background:#081a0e;border:1px solid var(--gbrd)}.ritem.lost{background:#180808;border:1px solid var(--rbrd)}
 .rname{font-weight:700;font-size:14px}.rteam{font-size:11px;color:var(--muted)}
-.ramt{font-family:'Black Han Sans',sans-serif;font-size:16px}
+.ramt{font-family:'Black Han Sans',sans-serif;font-size:15px}
 .ritem.won .ramt{color:var(--green)}.ritem.lost .ramt{color:var(--red)}
-.statrow{display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--border)}
+.statrow{display:flex;justify-content:space-between;font-size:12px;padding:7px 0;border-bottom:1px solid var(--border)}
 .statrow:last-child{border:none}.statlbl{color:var(--muted)}.statval{font-weight:700}
-#toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(14px);background:#0d2a1a;border:1px solid var(--greendim);color:var(--green);padding:10px 20px;border-radius:30px;font-size:13px;font-weight:700;opacity:0;transition:all .3s;z-index:1000;white-space:nowrap;pointer-events:none}
-#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.mov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:300;align-items:flex-end;backdrop-filter:blur(6px)}
+
+/* ── 모달 ── */
+.mov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:500;align-items:flex-end;backdrop-filter:blur(8px)}
 .mov.open{display:flex}
-.msh{background:var(--s2);border-radius:20px 20px 0 0;padding:24px 20px 44px;width:100%;border-top:1px solid var(--border)}
-.mh{width:36px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 20px}
-.mti{font-family:'Black Han Sans',sans-serif;font-size:20px;text-align:center;margin-bottom:20px}
-.qrwrap{text-align:center;padding:10px 0}
-.qrwrap img{border-radius:12px;border:3px solid var(--greendim)}
-.qrurl{font-size:11px;color:var(--muted);margin-top:10px;word-break:break-all;padding:0 10px}
-.waiting{text-align:center;padding:34px 20px}
-.wi{font-size:44px;animation:bounce 1.2s ease-in-out infinite}
-@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-.wt{font-size:14px;color:var(--muted);margin-top:14px;line-height:1.7}
-.wt strong{color:var(--txt);font-size:16px;display:block;margin-bottom:4px}
-.div{height:1px;background:var(--border);margin:14px 0}
-.slbl{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;font-weight:500}
-.mode-ind{text-align:center;color:var(--muted);font-size:11px;padding:10px}
-.ldot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red);animation:lp 1.4s infinite;margin-right:6px;vertical-align:middle}
+.msh{background:var(--s2);border-radius:22px 22px 0 0;padding:22px 18px 44px;width:100%;border-top:1px solid var(--border);max-height:90vh;overflow-y:auto}
+.mh{width:34px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 18px}
+.mti{font-family:'Black Han Sans',sans-serif;font-size:19px;text-align:center;margin-bottom:16px}
+.msub{font-size:12px;color:var(--muted);text-align:center;margin-bottom:18px;line-height:1.6}
+
+/* ── 토스트 ── */
+#toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(14px);background:#081f0e;border:1px solid var(--gbrd);color:var(--green);padding:10px 18px;border-radius:28px;font-size:13px;font-weight:700;opacity:0;transition:all .3s;z-index:1000;white-space:nowrap;pointer-events:none}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.err{background:#1f0808;border-color:var(--rbrd);color:var(--red)}
+
+/* ── 로딩 ── */
+#loading{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.spinner{width:38px;height:38px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── 기타 ── */
+.div{height:1px;background:var(--border);margin:13px 0}
+.slbl{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:7px;font-weight:500}
+.ldot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red);animation:lp 1.4s infinite;margin-right:5px;vertical-align:middle}
+.mode-ind{text-align:center;color:var(--muted);font-size:10px;padding:8px}
 .cf{position:fixed;width:8px;height:8px;border-radius:2px;top:-10px;animation:cfall linear forwards;pointer-events:none;z-index:500}
 @keyframes cfall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
 canvas{display:none}
-/* 로딩 스피너 */
-#loading{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
-.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-#loading p{color:var(--muted);font-size:13px}
+.empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty-state .ei{font-size:44px;margin-bottom:12px}
+.empty-state p{font-size:13px;line-height:1.7}
+.qrwrap{text-align:center;padding:8px 0}
+.qrwrap img{border-radius:12px;border:3px solid var(--gbrd)}
+.qrurl{font-size:10px;color:var(--muted);margin-top:8px;word-break:break-all;padding:0 8px}
+.waiting{text-align:center;padding:32px 20px}
+.wi{font-size:42px;animation:bounce 1.2s ease-in-out infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+.wt{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.7}
+.wt strong{color:var(--txt);font-size:15px;display:block;margin-bottom:3px}
+/* 수정 인라인 */
+.edit-row{display:flex;gap:6px;align-items:center}
+.edit-row .inp{margin-bottom:0;flex:1}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin:14px 14px 4px;padding:0 2px}
+.section-header h3{font-family:'Black Han Sans',sans-serif;font-size:14px;color:var(--muted);letter-spacing:.5px}
 </style>
 </head>
 <body>
 
-<!-- 로딩 -->
 <div id="loading">
-  <div style="font-family:'Black Han Sans',sans-serif;font-size:24px;color:var(--green)">🎾 테니스배팅</div>
+  <div style="font-family:'Black Han Sans',sans-serif;font-size:22px;color:var(--green)">🎾 테니스배팅</div>
   <div class="spinner"></div>
-  <p>Firebase 연결 중...</p>
+  <p style="color:var(--muted);font-size:12px">Firebase 연결 중...</p>
 </div>
-
 <div id="toast"></div>
 <canvas id="cv"></canvas>
 
-<!-- ══════════════════════════════
-     BET-ONLY SCREEN (참가자용)
-══════════════════════════════ -->
-<div class="screen" id="sc-bet">
+<!-- ═══════════════════════════════════
+     MASTER — 전체 게임 목록
+═══════════════════════════════════ -->
+<div class="view" id="v-master-list">
   <div class="hdr">
     <div class="logo">🎾 테니스<em>배팅</em></div>
-    <div id="bo-badge" class="badge badge-bet">대기 중</div>
-    <span class="syncdot" id="bo-sync"></span>
-  </div>
-
-  <!-- 대기 -->
-  <div id="bo-waiting" style="display:none">
-    <div class="card">
-      <div class="waiting">
-        <div class="wi">⏳</div>
-        <div class="wt"><strong>잠깐만요!</strong>운영자가 경기를 등록하면<br>자동으로 배팅 화면이 열려요.</div>
-      </div>
+    <div class="hdr-right">
+      <span class="badge b-green">운영자</span>
+      <span class="syncdot" id="sync-ml"></span>
     </div>
   </div>
 
-  <!-- 배팅 중 -->
-  <div id="bo-bview" style="display:none">
-    <div class="card">
+  <div class="card" style="margin-bottom:6px">
+    <div class="ct">📋 오늘의 경기 관리</div>
+    <button class="btn btn-g" onclick="openAddGame()">＋ 새 게임 등록</button>
+    <div style="margin-top:8px;display:flex;gap:8px">
+      <button class="btn btn-ghost btn-sm" style="flex:1" onclick="copyBetUrl()">🔗 배팅 링크 복사</button>
+      <button class="btn btn-ghost btn-sm" style="flex:1" onclick="showQR()">📱 QR코드</button>
+    </div>
+  </div>
+
+  <div class="section-header">
+    <h3>등록된 게임 <span id="ml-count" style="color:var(--green)">0</span></h3>
+    <span style="font-size:11px;color:var(--muted)">클릭하여 관리</span>
+  </div>
+  <div id="ml-list">
+    <div class="empty-state"><div class="ei">🎾</div><p>등록된 게임이 없어요.<br>새 게임을 등록해보세요!</p></div>
+  </div>
+  <div class="mode-ind">🔐 운영자 모드</div>
+</div>
+
+<!-- ═══════════════════════════════════
+     MASTER — 게임 상세 / 관리
+═══════════════════════════════════ -->
+<div class="view" id="v-master-detail">
+  <div class="hdr">
+    <div class="logo">
+      <button onclick="goToList()" style="background:none;border:none;color:var(--green);font-size:16px;cursor:pointer;padding:0;margin-right:4px">←</button>
+      🎾 <em style="color:var(--yellow);font-style:normal">게임 관리</em>
+    </div>
+    <div class="hdr-right">
+      <div id="md-badge" class="badge b-blue">배팅 중</div>
+      <span class="syncdot on" id="sync-md"></span>
+    </div>
+  </div>
+
+  <!-- 선수 정보 + 수정 -->
+  <div class="card">
+    <div class="ct">👥 선수 정보 <button class="btn-xs btn-ghost" onclick="toggleEditPlayers()">✏️ 수정</button></div>
+    <!-- 표시 모드 -->
+    <div id="md-player-view">
       <div class="matchup">
-        <div class="pbox pa"><div class="pname" id="b-nA">—</div><div class="prec" id="b-rA"></div></div>
-        <div class="vs">VS</div>
-        <div class="pbox pb"><div class="pname" id="b-nB">—</div><div class="prec" id="b-rB"></div></div>
+        <div class="pbox pa"><div class="pname" id="md-nA">—</div><div class="prec" id="md-rA"></div></div>
+        <div class="vs-txt">VS</div>
+        <div class="pbox pb"><div class="pname" id="md-nB">—</div><div class="prec" id="md-rB"></div></div>
       </div>
       <div class="slbl">전적 기반 승률</div>
-      <div class="probbar"><div class="pba" id="b-pba" style="width:50%"></div><div class="pbb" id="b-pbb" style="width:50%"></div></div>
-      <div class="plbls"><span class="pa-t" id="b-pA">50%</span><span class="pb-t" id="b-pB">50%</span></div>
+      <div class="probbar"><div class="pba" id="md-pba" style="width:50%"></div><div class="pbb" id="md-pbb" style="width:50%"></div></div>
+      <div class="plbls"><span class="pa-t" id="md-pA">50%</span><span class="pb-t" id="md-pB">50%</span></div>
     </div>
-    <div class="card">
-      <div class="ct">💰 현재 배팅 현황</div>
-      <div class="poolrow">
-        <div class="poolbox pa-pool"><div class="poollbl" id="b-llA">A</div><div class="poolamt" id="b-plA">0원</div><div class="poolret" id="b-rtA">—</div></div>
-        <div class="poolbox pb-pool"><div class="poollbl" id="b-llB">B</div><div class="poolamt" id="b-plB">0원</div><div class="poolret" id="b-rtB">—</div></div>
-      </div>
-      <div class="blist" id="b-bl"></div>
-    </div>
-    <div class="card" id="b-form">
-      <div class="ct">✋ 내 배팅</div>
-      <label class="lbl">내 이름</label>
-      <input class="inp" id="b-name" type="text" placeholder="이름 입력" maxlength="8">
-      <div class="tbtns">
-        <button class="tbtn" id="b-btnA" onclick="boSel('A')">
-          <div id="b-bnA">A팀</div><div class="tod" id="b-odA">배당 —</div>
-        </button>
-        <button class="tbtn" id="b-btnB" onclick="boSel('B')">
-          <div id="b-bnB">B팀</div><div class="tod" id="b-odB">배당 —</div>
-        </button>
-      </div>
-      <div class="amtbox">배팅 금액: <strong id="b-amt">5,000원</strong></div>
-      <button class="btn btn-g" onclick="boPlace()">배팅하기 🎰</button>
-    </div>
-    <div class="card" id="b-done" style="display:none">
-      <div style="text-align:center;padding:16px 0">
-        <div style="font-size:44px">✅</div>
-        <div style="font-family:'Black Han Sans',sans-serif;font-size:18px;color:var(--green);margin-top:10px" id="b-donemsg">배팅 완료!</div>
-        <div style="font-size:13px;color:var(--muted);margin-top:6px">결과를 기다려주세요 🎾</div>
+    <!-- 수정 모드 -->
+    <div id="md-player-edit" class="hidden">
+      <div class="slbl" style="color:var(--green)">🟢 A팀</div>
+      <label class="lbl">이름</label><input class="inp" id="ed-nA" type="text">
+      <div class="row2"><div><label class="lbl">승</label><input class="inp" id="ed-wA" type="number" min="0"></div><div><label class="lbl">패</label><input class="inp" id="ed-lA" type="number" min="0"></div></div>
+      <div class="div"></div>
+      <div class="slbl" style="color:var(--red)">🔴 B팀</div>
+      <label class="lbl">이름</label><input class="inp" id="ed-nB" type="text">
+      <div class="row2"><div><label class="lbl">승</label><input class="inp" id="ed-wB" type="number" min="0"></div><div><label class="lbl">패</label><input class="inp" id="ed-lB" type="number" min="0"></div></div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="toggleEditPlayers()">취소</button>
+        <button class="btn btn-g" onclick="saveEditPlayers()">저장</button>
       </div>
     </div>
   </div>
 
-  <!-- 경기 중 -->
-  <div id="bo-lview" style="display:none">
-    <div class="card">
-      <div class="ct"><span class="ldot"></span>경기 진행 중</div>
-      <div class="sbrd" style="margin-bottom:16px">
-        <div class="scpl"><div class="scn" id="b-lnA">A</div><div class="snum a" id="b-lsA">0</div><div class="spips" id="b-ssA"></div></div>
-        <div class="svs">:</div>
-        <div class="scpl"><div class="scn" id="b-lnB">B</div><div class="snum b" id="b-lsB">0</div><div class="spips" id="b-ssB"></div></div>
+  <!-- 배팅 현황 (운영자: 실명) -->
+  <div class="card" id="md-pool-card">
+    <div class="ct">💰 배팅 현황 <span class="ct-right">실명 표시</span></div>
+    <div class="poolrow">
+      <div class="poolbox pa-pool"><div class="poollbl" id="md-llA">A</div><div class="poolamt" id="md-plA">0원</div><div class="poolret" id="md-rtA">—</div></div>
+      <div class="poolbox pb-pool"><div class="poollbl" id="md-llB">B</div><div class="poolamt" id="md-plB">0원</div><div class="poolret" id="md-rtB">—</div></div>
+    </div>
+    <div class="blist" id="md-bl"></div>
+  </div>
+
+  <!-- 설정 수정 (배팅 중일 때만) -->
+  <div class="card" id="md-settings-card">
+    <div class="ct">⚙️ 게임 설정 <button class="btn-xs btn-ghost" onclick="toggleEditSettings()">✏️ 수정</button></div>
+    <div id="md-settings-view" style="font-size:13px;color:var(--muted)">
+      세트: <span id="md-maxS-view" style="color:var(--txt);font-weight:700"></span> &nbsp;|&nbsp;
+      배팅: <span id="md-amt-view" style="color:var(--yellow);font-weight:700"></span>
+    </div>
+    <div id="md-settings-edit" class="hidden" style="margin-top:10px">
+      <label class="lbl">세트 선취</label>
+      <select class="inp" id="ed-sets">
+        <option value="4">4세트 선취 (최소 4판~최대 7판)</option>
+        <option value="6">6세트 선취 (최소 6판~최대 11판)</option>
+      </select>
+      <label class="lbl">배팅 금액</label>
+      <select class="inp" id="ed-amt">
+        <option value="1000">1,000원</option>
+        <option value="3000">3,000원</option>
+        <option value="5000">5,000원</option>
+        <option value="10000">10,000원</option>
+      </select>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="toggleEditSettings()">취소</button>
+        <button class="btn btn-g" onclick="saveEditSettings()">저장</button>
       </div>
     </div>
-    <div class="card">
-      <div class="ct">💰 배팅 현황</div>
-      <div class="poolrow">
-        <div class="poolbox pa-pool"><div class="poollbl" id="b-lllA">A</div><div class="poolamt" id="b-lplA">0원</div><div class="poolret" id="b-lrtA">—</div></div>
-        <div class="poolbox pb-pool"><div class="poollbl" id="b-lllB">B</div><div class="poolamt" id="b-lplB">0원</div><div class="poolret" id="b-lrtB">—</div></div>
-      </div>
-      <div class="blist" id="b-lbl"></div>
+  </div>
+
+  <!-- LIVE 스코어 입력 -->
+  <div class="card hidden" id="md-live-card">
+    <div class="ct"><span class="ldot"></span>세트 스코어 기록</div>
+    <div class="target-info" id="md-target-info"></div>
+    <div class="sbrd" style="margin-bottom:14px">
+      <div class="scpl"><div class="scn" id="md-lnA">A</div><div class="snum a" id="md-lsA">0</div><div class="spips" id="md-ssA"></div></div>
+      <div class="svs">:</div>
+      <div class="scpl"><div class="scn" id="md-lnB">B</div><div class="snum b" id="md-lsB">0</div><div class="spips" id="md-ssB"></div></div>
     </div>
+    <div class="slbl" id="md-setlbl">1세트 게임 스코어</div>
+    <div class="sinrow">
+      <label id="md-sinA">A</label>
+      <input class="inp sinp" id="md-saS" type="number" min="0" max="7" placeholder="0">
+      <span class="sdash">—</span>
+      <input class="inp sinp" id="md-sbS" type="number" min="0" max="7" placeholder="0">
+      <label id="md-sinB">B</label>
+    </div>
+    <button class="btn btn-g" style="margin-bottom:7px" onclick="mdSet()">세트 확정 ✓</button>
+    <button class="btn btn-ghost" style="font-size:12px;padding:9px" onclick="mdUndoSet()">↩ 마지막 세트 취소</button>
   </div>
 
   <!-- 결과 -->
-  <div id="bo-rview" style="display:none">
-    <div class="wbanner"><div class="we">🏆</div><div class="wn" id="b-rw">—</div><div class="ws" id="b-rs">—</div></div>
-    <div class="card"><div class="ct">📊 배팅 결과</div><div id="b-rl"></div></div>
+  <div class="card hidden" id="md-result-card">
+    <div class="wbanner" style="padding:10px 0 6px">
+      <div class="we">🏆</div>
+      <div class="wn" id="md-rw">—</div>
+      <div class="ws" id="md-rs">—</div>
+    </div>
+    <div style="margin-top:14px" id="md-rl"></div>
+    <div class="card-sm" style="margin-top:10px;background:var(--s1);border-radius:12px;padding:12px" id="md-rs2"></div>
   </div>
 
-  <div class="mode-ind">👤 참가자 모드 · 실시간 자동 반영</div>
-</div>
-
-<!-- ══════════════════════════════
-     MASTER SCREEN (운영자용)
-══════════════════════════════ -->
-<div class="screen" id="sc-master">
-  <div class="hdr">
-    <div class="logo">🎾 테니스<em>배팅</em></div>
-    <div id="ms-badge" class="badge badge-setup">설정</div>
-    <span class="syncdot" id="ms-sync"></span>
-  </div>
-
-  <!-- 설정 -->
-  <div id="ms-setup">
-    <div class="card">
-      <div class="ct">🏃 선수 등록</div>
-      <div class="slbl" style="color:var(--green)">🟢 A팀</div>
-      <label class="lbl">이름</label>
-      <input class="inp" id="m-nA" type="text" placeholder="예: 홍길동">
-      <div style="display:flex;gap:10px">
-        <div style="flex:1"><label class="lbl">승</label><input class="inp" id="m-wA" type="number" placeholder="0" min="0"></div>
-        <div style="flex:1"><label class="lbl">패</label><input class="inp" id="m-lA" type="number" placeholder="0" min="0"></div>
-      </div>
-      <div class="div"></div>
-      <div class="slbl" style="color:var(--red)">🔴 B팀</div>
-      <label class="lbl">이름</label>
-      <input class="inp" id="m-nB" type="text" placeholder="예: 이순신">
-      <div style="display:flex;gap:10px">
-        <div style="flex:1"><label class="lbl">승</label><input class="inp" id="m-wB" type="number" placeholder="0" min="0"></div>
-        <div style="flex:1"><label class="lbl">패</label><input class="inp" id="m-lB" type="number" placeholder="0" min="0"></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="ct">⚙️ 설정</div>
-      <label class="lbl">세트 수</label>
-      <select class="inp" id="m-sets">
-        <option value="1">1세트</option>
-        <option value="3" selected>3세트</option>
-        <option value="5">5세트</option>
-      </select>
-      <label class="lbl">배팅 금액</label>
-      <select class="inp" id="m-amt">
-        <option value="5000">5,000원</option>
-        <option value="10000">10,000원</option>
-        <option value="3000">3,000원</option>
-        <option value="1000">1,000원</option>
-      </select>
-    </div>
-    <div style="padding:0 16px 10px">
-      <button class="btn btn-g" onclick="msGo()">배팅 시작 & QR 생성 →</button>
-    </div>
-  </div>
-
-  <!-- 배팅 중 (운영자) -->
-  <div id="ms-bet" style="display:none">
-    <div class="card">
-      <div class="ct">📱 참가자 QR코드</div>
-      <div class="qrwrap">
-        <img id="m-qr" src="" alt="QR" width="190" height="190">
-        <div class="qrurl" id="m-qrurl"></div>
-      </div>
-      <div style="margin-top:12px;display:flex;gap:8px">
-        <button class="btn btn-ghost btn-sm" style="flex:1" onclick="copyUrl()">🔗 링크 복사</button>
-        <button class="btn btn-g btn-sm" style="flex:1" onclick="openM('m-start')">▶️ 게임 시작</button>
-      </div>
-    </div>
-    <div class="card">
-      <div class="matchup">
-        <div class="pbox pa"><div class="pname" id="m-dA">—</div><div class="prec" id="m-rA"></div></div>
-        <div class="vs">VS</div>
-        <div class="pbox pb"><div class="pname" id="m-dB">—</div><div class="prec" id="m-rB"></div></div>
-      </div>
-      <div class="slbl">전적 기반 승률</div>
-      <div class="probbar"><div class="pba" id="m-pba" style="width:50%"></div><div class="pbb" id="m-pbb" style="width:50%"></div></div>
-      <div class="plbls"><span class="pa-t" id="m-pA">50%</span><span class="pb-t" id="m-pB">50%</span></div>
-    </div>
-    <div class="card">
-      <div class="ct">💰 배팅 현황 <small style="color:var(--muted);font-size:10px;font-weight:400">실시간 · 실명 표시</small></div>
-      <div class="poolrow">
-        <div class="poolbox pa-pool"><div class="poollbl" id="m-llA">A</div><div class="poolamt" id="m-plA">0원</div><div class="poolret" id="m-rtA">—</div></div>
-        <div class="poolbox pb-pool"><div class="poollbl" id="m-llB">B</div><div class="poolamt" id="m-plB">0원</div><div class="poolret" id="m-rtB">—</div></div>
-      </div>
-      <div class="blist" id="m-bl"></div>
-    </div>
-    <div style="padding:0 16px 6px">
-      <button class="btn btn-r" onclick="openM('m-start')">▶️ 게임 시작하기</button>
-    </div>
-  </div>
-
-  <!-- 경기 중 (운영자) -->
-  <div id="ms-live" style="display:none">
-    <div class="card">
-      <div class="ct"><span class="ldot"></span>스코어 입력</div>
-      <div class="sbrd" style="margin-bottom:16px">
-        <div class="scpl"><div class="scn" id="m-lnA">A</div><div class="snum a" id="m-lsA">0</div><div class="spips" id="m-ssA"></div></div>
-        <div class="svs">:</div>
-        <div class="scpl"><div class="scn" id="m-lnB">B</div><div class="snum b" id="m-lsB">0</div><div class="spips" id="m-ssB"></div></div>
-      </div>
-      <div class="slbl" id="m-setlbl">1세트 입력</div>
-      <div class="sinrow">
-        <label id="m-sinA">A</label>
-        <input class="inp sinp" id="m-saS" type="number" min="0" placeholder="0">
-        <span class="sdash">—</span>
-        <input class="inp sinp" id="m-sbS" type="number" min="0" placeholder="0">
-        <label id="m-sinB">B</label>
-      </div>
-      <button class="btn btn-g" style="margin-bottom:10px" onclick="msSet()">세트 확정 ✓</button>
-    </div>
-    <div class="card">
-      <div class="ct">💰 배팅 현황</div>
-      <div class="poolrow">
-        <div class="poolbox pa-pool"><div class="poollbl" id="m-lllA">A</div><div class="poolamt" id="m-lplA">0원</div><div class="poolret" id="m-lrtA">—</div></div>
-        <div class="poolbox pb-pool"><div class="poollbl" id="m-lllB">B</div><div class="poolamt" id="m-lplB">0원</div><div class="poolret" id="m-lrtB">—</div></div>
-      </div>
-      <div class="blist" id="m-lbl"></div>
-    </div>
-    <div style="padding:0 16px 6px">
-      <button class="btn btn-r" onclick="msEnd()">🏁 게임 종료</button>
-    </div>
-  </div>
-
-  <!-- 결과 (운영자) -->
-  <div id="ms-result" style="display:none">
-    <div class="wbanner"><div class="we">🏆</div><div class="wn" id="m-rw">—</div><div class="ws" id="m-rs">—</div></div>
-    <div class="card"><div class="ct">📊 배팅 결과 (전체 공개)</div><div id="m-rl"></div></div>
-    <div class="card"><div class="ct">📈 통계</div><div id="m-rs2"></div></div>
-    <div style="padding:0 16px 8px">
-      <button class="btn btn-gold" style="margin-bottom:8px" onclick="shareImg()">📤 결과 이미지 저장</button>
-      <button class="btn btn-ghost" onclick="msNew()">🔄 새 게임 시작</button>
-    </div>
+  <!-- 액션 버튼 영역 -->
+  <div style="padding:0 14px 8px" id="md-actions">
+    <!-- 동적으로 채워짐 -->
   </div>
 
   <div class="mode-ind">🔐 운영자 모드</div>
 </div>
 
-<!-- 게임 시작 모달 -->
-<div class="mov" id="m-start">
+<!-- ═══════════════════════════════════
+     BET-ONLY — 게임 목록 (참가자)
+═══════════════════════════════════ -->
+<div class="view" id="v-bet-list">
+  <div class="hdr">
+    <div class="logo">🎾 테니스<em>배팅</em></div>
+    <div class="hdr-right">
+      <span class="badge b-blue">배팅</span>
+      <span class="syncdot" id="sync-bl"></span>
+    </div>
+  </div>
+  <div class="section-header">
+    <h3>진행 중인 게임</h3>
+    <span style="font-size:11px;color:var(--muted)" id="bl-updated">—</span>
+  </div>
+  <div id="bl-list">
+    <div class="empty-state"><div class="wi">⏳</div><p style="font-size:13px;color:var(--muted);margin-top:12px">운영자가 게임을 등록하면<br>여기에 나타납니다.</p></div>
+  </div>
+  <div class="mode-ind">👤 참가자 모드 · 실시간 자동 반영</div>
+</div>
+
+<!-- ═══════════════════════════════════
+     BET-ONLY — 게임 상세 (참가자)
+═══════════════════════════════════ -->
+<div class="view" id="v-bet-detail">
+  <div class="hdr">
+    <div class="logo">
+      <button onclick="goToBetList()" style="background:none;border:none;color:var(--green);font-size:16px;cursor:pointer;padding:0;margin-right:4px">←</button>
+      🎾 <em style="color:var(--yellow);font-style:normal" id="bd-title">—</em>
+    </div>
+    <div class="hdr-right">
+      <div id="bd-badge" class="badge b-blue">배팅 중</div>
+      <span class="syncdot" id="sync-bd"></span>
+    </div>
+  </div>
+
+  <!-- 대기 -->
+  <div id="bd-waiting" class="hidden">
+    <div class="card"><div class="waiting"><div class="wi">⏳</div><div class="wt"><strong>잠깐만요!</strong>운영자가 배팅을 열면 나타납니다.</div></div></div>
+  </div>
+
+  <!-- 배팅 중 -->
+  <div id="bd-bview" class="hidden">
+    <div class="card">
+      <div class="matchup">
+        <div class="pbox pa"><div class="pname" id="bd-nA">—</div><div class="prec" id="bd-rA"></div></div>
+        <div class="vs-txt">VS</div>
+        <div class="pbox pb"><div class="pname" id="bd-nB">—</div><div class="prec" id="bd-rB"></div></div>
+      </div>
+      <div class="slbl">전적 기반 승률</div>
+      <div class="probbar"><div class="pba" id="bd-pba" style="width:50%"></div><div class="pbb" id="bd-pbb" style="width:50%"></div></div>
+      <div class="plbls"><span class="pa-t" id="bd-pA">50%</span><span class="pb-t" id="bd-pB">50%</span></div>
+    </div>
+    <div class="card">
+      <div class="ct">💰 배팅 현황</div>
+      <div class="poolrow">
+        <div class="poolbox pa-pool"><div class="poollbl" id="bd-llA">A</div><div class="poolamt" id="bd-plA">0원</div><div class="poolret" id="bd-rtA">—</div></div>
+        <div class="poolbox pb-pool"><div class="poollbl" id="bd-llB">B</div><div class="poolamt" id="bd-plB">0원</div><div class="poolret" id="bd-rtB">—</div></div>
+      </div>
+      <div class="blist" id="bd-bl"></div>
+    </div>
+    <div class="card" id="bd-form">
+      <div class="ct">✋ 내 배팅</div>
+      <label class="lbl">내 이름</label>
+      <input class="inp" id="bd-myname" type="text" placeholder="이름 입력" maxlength="8">
+      <div class="tbtns">
+        <button class="tbtn" id="bd-btnA" onclick="bdSel('A')"><div id="bd-bnA">A팀</div><div class="tod" id="bd-odA">배당 —</div></button>
+        <button class="tbtn" id="bd-btnB" onclick="bdSel('B')"><div id="bd-bnB">B팀</div><div class="tod" id="bd-odB">배당 —</div></button>
+      </div>
+      <div class="amtbox">배팅 금액: <strong id="bd-amt">5,000원</strong></div>
+      <button class="btn btn-g" onclick="bdPlace()">배팅하기 🎰</button>
+    </div>
+    <div class="card hidden" id="bd-done">
+      <div style="text-align:center;padding:14px 0">
+        <div style="font-size:42px">✅</div>
+        <div style="font-family:'Black Han Sans',sans-serif;font-size:17px;color:var(--green);margin-top:9px" id="bd-donemsg">배팅 완료!</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:5px">결과를 기다려주세요 🎾</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 경기 중 -->
+  <div id="bd-lview" class="hidden">
+    <div class="card">
+      <div class="ct"><span class="ldot"></span>경기 진행 중</div>
+      <div class="target-info" id="bd-target-info"></div>
+      <div class="sbrd" style="margin-bottom:14px">
+        <div class="scpl"><div class="scn" id="bd-lnA">A</div><div class="snum a" id="bd-lsA">0</div><div class="spips" id="bd-ssA"></div></div>
+        <div class="svs">:</div>
+        <div class="scpl"><div class="scn" id="bd-lnB">B</div><div class="snum b" id="bd-lsB">0</div><div class="spips" id="bd-ssB"></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ct">💰 배팅 현황</div>
+      <div class="poolrow">
+        <div class="poolbox pa-pool"><div class="poollbl" id="bd-lllA">A</div><div class="poolamt" id="bd-lplA">0원</div><div class="poolret" id="bd-lrtA">—</div></div>
+        <div class="poolbox pb-pool"><div class="poollbl" id="bd-lllB">B</div><div class="poolamt" id="bd-lplB">0원</div><div class="poolret" id="bd-lrtB">—</div></div>
+      </div>
+      <div class="blist" id="bd-lbl"></div>
+    </div>
+  </div>
+
+  <!-- 결과 -->
+  <div id="bd-rview" class="hidden">
+    <div class="wbanner"><div class="we">🏆</div><div class="wn" id="bd-rw">—</div><div class="ws" id="bd-rs">—</div></div>
+    <div class="card"><div class="ct">📊 배팅 결과</div><div id="bd-rl"></div></div>
+    <div style="padding:0 14px 6px"><button class="btn btn-gold" onclick="shareImg()">📤 결과 이미지 저장</button></div>
+  </div>
+
+  <div class="mode-ind">👤 참가자 모드</div>
+</div>
+
+<!-- ── QR 모달 ── -->
+<div class="mov" id="modal-qr">
+  <div class="msh">
+    <div class="mh"></div>
+    <div class="mti">📱 QR코드 공유</div>
+    <div class="qrwrap"><img id="qr-img" src="" alt="QR" width="200" height="200"><div class="qrurl" id="qr-url"></div></div>
+    <div class="btn-row" style="margin-top:14px">
+      <button class="btn btn-ghost" onclick="closeM('modal-qr')">닫기</button>
+      <button class="btn btn-g" onclick="copyBetUrl()">🔗 링크 복사</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 게임 등록 모달 ── -->
+<div class="mov" id="modal-add">
+  <div class="msh">
+    <div class="mh"></div>
+    <div class="mti">＋ 새 게임 등록</div>
+    <div class="slbl" style="color:var(--green)">🟢 A팀</div>
+    <label class="lbl">이름</label><input class="inp" id="add-nA" type="text" placeholder="예: 홍길동">
+    <div class="row2"><div><label class="lbl">승 (선택)</label><input class="inp" id="add-wA" type="number" placeholder="0" min="0"></div><div><label class="lbl">패 (선택)</label><input class="inp" id="add-lA" type="number" placeholder="0" min="0"></div></div>
+    <div class="div"></div>
+    <div class="slbl" style="color:var(--red)">🔴 B팀</div>
+    <label class="lbl">이름</label><input class="inp" id="add-nB" type="text" placeholder="예: 이순신">
+    <div class="row2"><div><label class="lbl">승 (선택)</label><input class="inp" id="add-wB" type="number" placeholder="0" min="0"></div><div><label class="lbl">패 (선택)</label><input class="inp" id="add-lB" type="number" placeholder="0" min="0"></div></div>
+    <div class="div"></div>
+    <label class="lbl">세트 선취</label>
+    <select class="inp" id="add-sets">
+      <option value="4">4세트 선취 (최소 4판~최대 7판)</option>
+      <option value="6">6세트 선취 (최소 6판~최대 11판)</option>
+    </select>
+    <label class="lbl">배팅 금액</label>
+    <select class="inp" id="add-amt">
+      <option value="5000">5,000원</option>
+      <option value="10000">10,000원</option>
+      <option value="3000">3,000원</option>
+      <option value="1000">1,000원</option>
+    </select>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeM('modal-add')">취소</button>
+      <button class="btn btn-g" onclick="addGame()">등록하기 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 게임 시작 확인 모달 ── -->
+<div class="mov" id="modal-start">
   <div class="msh">
     <div class="mh"></div>
     <div class="mti">▶️ 게임을 시작할까요?</div>
-    <p style="font-size:13px;color:var(--muted);text-align:center;margin-bottom:20px">게임 시작 후에는 추가 배팅이 불가합니다.</p>
-    <div style="display:flex;gap:10px">
-      <button class="btn btn-ghost" style="flex:1" onclick="closeM('m-start')">취소</button>
-      <button class="btn btn-g" style="flex:1" onclick="msLive()">시작!</button>
+    <div class="msub">게임 시작 후에는 추가 배팅이 불가합니다.</div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeM('modal-start')">취소</button>
+      <button class="btn btn-g" onclick="startGameConfirmed()">시작!</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 게임 삭제 확인 모달 ── -->
+<div class="mov" id="modal-delete">
+  <div class="msh">
+    <div class="mh"></div>
+    <div class="mti">🗑️ 게임을 삭제할까요?</div>
+    <div class="msub">배팅 데이터 포함 모두 삭제됩니다.<br>복구할 수 없어요.</div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeM('modal-delete')">취소</button>
+      <button class="btn btn-r" onclick="deleteGameConfirmed()">삭제</button>
     </div>
   </div>
 </div>
 
 <!-- Firebase SDK -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, set, onValue, update, remove, get }
+import { initializeApp }  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, onValue, update, remove, push, get }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-// ── Firebase 설정 ──────────────────────────
+// ── Firebase 설정 ──────────────────────────────
 const firebaseConfig = {
   apiKey: "AIzaSyCjdwMEG4iGhP2UQaK5Jbukiy5M6r5NBZs",
   authDomain: "tennis-bet-947ec.firebaseapp.com",
@@ -383,541 +562,687 @@ const firebaseConfig = {
   appId: "1:450531690066:web:1499c5dcfd33bdc6d3818b"
 };
 
-const app = initializeApp(firebaseConfig);
-const db  = getDatabase(app);
-const GAME_REF = ref(db, 'game');
+const fbApp  = initializeApp(firebaseConfig);
+const db     = getDatabase(fbApp);
+const GAMES  = ref(db, 'games'); // /games/{gameId}
 
-// ── 전역 상태 ──────────────────────────────
-let G = null;          // 현재 게임 데이터
-let mode = '';         // 'master' | 'betonly'
-let boTeam = null;     // 참가자 선택 팀
-let boDone = false;    // 배팅 완료 여부
+// ── 상태 ──────────────────────────────────────
+let mode       = 'master';   // 'master' | 'betonly'
+let allGames   = {};         // { gameId: gameData }
+let curGameId  = null;       // 현재 보고 있는 게임 ID
+let bdTeam     = null;       // 참가자 선택 팀
+let bdDone     = false;      // 배팅 완료 여부
+let bdGameId   = null;       // 참가자가 보고 있는 게임 ID
 
-// ── 유틸 ───────────────────────────────────
-const fmt  = n => Number(n).toLocaleString('ko-KR') + '원';
-const fmtK = n => n >= 10000 ? (n/10000).toFixed(1) + '만원' : (n/1000) + '천원';
-const se   = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
-const mask = n => n[0] + '*'.repeat(Math.max(1, n.length - 1));
+// ── 유틸 ──────────────────────────────────────
+const fmt   = n => Number(n).toLocaleString('ko-KR') + '원';
+const fmtK  = n => n >= 10000 ? (n/10000).toFixed(1) + '만원' : (n/1000) + '천원';
+const se    = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+const show  = id => { const e = document.getElementById(id); if (e) e.classList.remove('hidden'); };
+const hide  = id => { const e = document.getElementById(id); if (e) e.classList.add('hidden'); };
+const mask  = n => n[0] + '*'.repeat(Math.max(1, n.length - 1));
 
-function toast(msg, dur = 2500) {
+function toast(msg, isErr = false, dur = 2500) {
   const el = document.getElementById('toast');
   el.textContent = msg;
-  el.classList.add('show');
+  el.className   = isErr ? 'err show' : 'show';
   clearTimeout(el._t);
-  el._t = setTimeout(() => el.classList.remove('show'), dur);
+  el._t = setTimeout(() => el.className = '', dur);
 }
 function openM(id)  { document.getElementById(id).classList.add('open'); }
 function closeM(id) { document.getElementById(id).classList.remove('open'); }
-window.openM  = openM;
 window.closeM = closeM;
 
-function syncDot(id, on) {
-  const e = document.getElementById(id);
-  if (e) e.classList.toggle('on', on);
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  window.scrollTo(0, 0);
 }
 
-// ── 확률 계산 ──────────────────────────────
+function syncOn(id) { const e = document.getElementById(id); if (e) e.classList.add('on'); }
+
+// ── 확률 / 배당 ────────────────────────────────
 function calcProb(wA, lA, wB, lB) {
-  const tA = wA + lA, tB = wB + lB;
+  const tA = wA+lA, tB = wB+lB;
   if (!tA && !tB) return [50, 50];
-  const rA = tA ? wA / tA : 0.5;
-  const rB = tB ? wB / tB : 0.5;
-  const p = Math.round(rA / (rA + rB) * 100);
-  return [p, 100 - p];
+  const rA = tA ? wA/tA : .5, rB = tB ? wB/tB : .5;
+  const p = Math.round(rA/(rA+rB)*100);
+  return [p, 100-p];
 }
-
-// ── 배당 계산 ──────────────────────────────
 function calcOdds(bets, amt) {
-  if (!bets || !bets.length) return { aC:0, bC:0, pA:0, pB:0, tot:0, rA:0, rB:0, oA:'—', oB:'—' };
-  const aC = bets.filter(b => b.t === 'A').length;
-  const bC = bets.filter(b => b.t === 'B').length;
-  const tot = (aC + bC) * amt;
-  const pA  = aC * amt, pB = bC * amt;
-  const rA  = aC ? Math.floor(tot / aC) : 0;
-  const rB  = bC ? Math.floor(tot / bC) : 0;
-  const oA  = pA ? (tot / pA).toFixed(2) : '—';
-  const oB  = pB ? (tot / pB).toFixed(2) : '—';
-  return { aC, bC, pA, pB, tot, rA, rB, oA, oB };
+  if (!bets || !bets.length) return { aC:0,bC:0,pA:0,pB:0,tot:0,rA:0,rB:0,oA:'—',oB:'—' };
+  const aC = bets.filter(b=>b.t==='A').length, bC = bets.filter(b=>b.t==='B').length;
+  const tot = (aC+bC)*amt, pA = aC*amt, pB = bC*amt;
+  const rA = aC ? Math.floor(tot/aC) : 0, rB = bC ? Math.floor(tot/bC) : 0;
+  return { aC,bC,pA,pB,tot,rA,rB,oA:pA?(tot/pA).toFixed(2):'—',oB:pB?(tot/pB).toFixed(2):'—' };
+}
+function targetSets(g) { return g ? (parseInt(g.maxS)||4) : 4; }
+function checkWinner(sets, target) {
+  const sA = sets.filter(s=>s.a>s.b).length, sB = sets.filter(s=>s.b>s.a).length;
+  return sA >= target ? 'A' : sB >= target ? 'B' : null;
 }
 
-// ── QR 코드 ────────────────────────────────
-function betUrl() {
-  return window.location.href.split('?')[0] + '?mode=bet';
+// ── 게임 상태 뱃지 ────────────────────────────
+function phaseBadge(phase) {
+  const m = { bet:['b-blue','배팅 중'], live:['b-red','LIVE'], result:['b-yellow','종료'], done:['b-gray','완료'] };
+  return m[phase] || ['b-gray', phase];
 }
-function renderQR() {
-  const url = betUrl();
-  const enc = encodeURIComponent(url);
-  document.getElementById('m-qr').src =
-    `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${enc}&bgcolor=141f14&color=3ddc84&margin=10`;
-  document.getElementById('m-qrurl').textContent = url;
+function phaseLabel(phase) {
+  return { bet:'배팅 중', live:'진행 중', result:'결과', done:'완료' }[phase] || phase;
 }
-function copyUrl() {
+
+// ── QR / URL ───────────────────────────────────
+function betUrl() { return window.location.href.split('?')[0] + '?mode=bet'; }
+function showQR() {
   const url = betUrl();
-  if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => toast('🔗 링크 복사됨!'));
+  document.getElementById('qr-img').src =
+    `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}&bgcolor=111a1e&color=3ddc84&margin=10`;
+  document.getElementById('qr-url').textContent = url;
+  openM('modal-qr');
+}
+function copyBetUrl() {
+  const url = betUrl();
+  if (navigator.clipboard) navigator.clipboard.writeText(url).then(()=>toast('🔗 링크 복사됨!'));
   else toast(url);
+  closeM('modal-qr');
 }
-window.copyUrl = copyUrl;
+window.showQR     = showQR;
+window.copyBetUrl = copyBetUrl;
 
-// ── 배팅 목록 렌더링 ───────────────────────
-function renderBetList(containerId, bets, nameA, nameB, anon) {
-  const el = document.getElementById(containerId);
-  if (!el) return;
-  if (!bets || !bets.length) {
-    el.innerHTML = '<p style="color:var(--muted);font-size:12px;text-align:center;padding:10px">아직 배팅한 사람이 없어요</p>';
+// ──────────────────────────────────────────────
+// MASTER: 게임 목록
+// ──────────────────────────────────────────────
+function renderMasterList(games) {
+  const ids = Object.keys(games || {});
+  se('ml-count', ids.length);
+  const el = document.getElementById('ml-list');
+  if (!ids.length) {
+    el.innerHTML = `<div class="empty-state"><div class="ei">🎾</div><p>등록된 게임이 없어요.<br>새 게임을 등록해보세요!</p></div>`;
     return;
   }
-  el.innerHTML = bets.map(b => {
-    const dn = anon ? mask(b.n) : b.n;
-    const tn = b.t === 'A' ? nameA : nameB;
-    return `<div class="bitem b${b.t.toLowerCase()}">
-      <span class="bname">${dn}</span>
-      <span class="btag">${tn}</span>
+  // 최신순 정렬
+  const sorted = ids.sort((a,b) => (games[b].createdAt||0)-(games[a].createdAt||0));
+  el.innerHTML = sorted.map(id => {
+    const g = games[id];
+    const [cls, lbl] = phaseBadge(g.phase);
+    const bets = g.bets || [];
+    const od = calcOdds(bets, g.amt);
+    const sA = (g.sets||[]).filter(s=>s.a>s.b).length;
+    const sB = (g.sets||[]).filter(s=>s.b>s.a).length;
+    const scoreDisp = g.phase === 'live' || g.phase === 'result'
+      ? `<span style="font-weight:700;color:var(--green)">${sA}</span><span style="color:var(--muted)"> : </span><span style="font-weight:700;color:var(--red)">${sB}</span>`
+      : '';
+    return `<div class="game-card phase-${g.phase==='result'?'result':g.phase}" onclick="openMasterDetail('${id}')">
+      <div class="gc-top">
+        <span class="gc-num">#${ids.indexOf(id)+1}</span>
+        <span class="gc-title">${g.pA.n} vs ${g.pB.n}</span>
+        ${scoreDisp ? `<span class="gc-score">${scoreDisp}</span>` : ''}
+        <span class="badge ${cls}">${lbl}</span>
+      </div>
+      <div class="gc-players">
+        <span class="gc-pa">${g.pA.n}</span>
+        <span class="gc-vs">VS</span>
+        <span class="gc-pb">${g.pB.n}</span>
+      </div>
+      <div class="gc-meta">
+        <span class="gc-tag">🎰 ${bets.length}명 배팅</span>
+        <span class="gc-tag">💰 ${fmt(od.tot)}</span>
+        <span class="gc-tag">🎾 ${g.maxS}세트 선취</span>
+      </div>
     </div>`;
   }).join('');
 }
 
-// ── 풀 박스 렌더링 ─────────────────────────
-function renderPool(px, G, anon) {
-  if (!G) return;
-  const bets = G.bets || [];
-  const od   = calcOdds(bets, G.amt);
-  se(px + 'llA',  G.pA.n);
-  se(px + 'llB',  G.pB.n);
-  se(px + 'plA',  fmt(od.pA));
-  se(px + 'plB',  fmt(od.pB));
-  se(px + 'rtA',  od.rA > 0 ? `이기면 ${fmt(od.rA)}` : '첫 배팅 대기');
-  se(px + 'rtB',  od.rB > 0 ? `이기면 ${fmt(od.rB)}` : '첫 배팅 대기');
-  renderBetList(px + 'bl', bets, G.pA.n, G.pB.n, anon);
+// ── 게임 등록 ──────────────────────────────────
+function openAddGame() {
+  ['add-nA','add-nB','add-wA','add-lA','add-wB','add-lB'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  openM('modal-add');
 }
+window.openAddGame = openAddGame;
 
-function renderLPool(px, G, anon) {
-  if (!G) return;
-  const bets = G.bets || [];
-  const od   = calcOdds(bets, G.amt);
-  se(px + 'lllA', G.pA.n);
-  se(px + 'lllB', G.pB.n);
-  se(px + 'lplA', fmt(od.pA));
-  se(px + 'lplB', fmt(od.pB));
-  se(px + 'lrtA', od.rA > 0 ? `이기면 ${fmt(od.rA)}` : '—');
-  se(px + 'lrtB', od.rB > 0 ? `이기면 ${fmt(od.rB)}` : '—');
-  renderBetList(px + 'lbl', bets, G.pA.n, G.pB.n, anon);
-}
-
-// ── 스코어 렌더링 ──────────────────────────
-function renderScore(prefix, G) {
-  const sets = G.sets || [];
-  const sA = sets.filter(s => s.a > s.b).length;
-  const sB = sets.filter(s => s.b > s.a).length;
-  se(prefix + 'lsA', sA);
-  se(prefix + 'lsB', sB);
-  const eA = document.getElementById(prefix + 'ssA');
-  const eB = document.getElementById(prefix + 'ssB');
-  if (eA) eA.innerHTML = sets.map(s => `<span class="spip ${s.a > s.b ? 'w' : ''}">${s.a}</span>`).join('');
-  if (eB) eB.innerHTML = sets.map(s => `<span class="spip ${s.b > s.a ? 'w' : ''}">${s.b}</span>`).join('');
-}
-
-// ────────────────────────────────────────────
-// MASTER 동작
-// ────────────────────────────────────────────
-async function msGo() {
-  const nA = document.getElementById('m-nA').value.trim();
-  const nB = document.getElementById('m-nB').value.trim();
-  if (!nA || !nB) { toast('❌ 선수 이름을 입력하세요'); return; }
-
+async function addGame() {
+  const nA = document.getElementById('add-nA').value.trim();
+  const nB = document.getElementById('add-nB').value.trim();
+  if (!nA || !nB) { toast('❌ 선수 이름을 입력하세요', true); return; }
   const gameData = {
     phase: 'bet',
-    pA: { n: nA, w: parseInt(document.getElementById('m-wA').value) || 0, l: parseInt(document.getElementById('m-lA').value) || 0 },
-    pB: { n: nB, w: parseInt(document.getElementById('m-wB').value) || 0, l: parseInt(document.getElementById('m-lB').value) || 0 },
-    maxS: parseInt(document.getElementById('m-sets').value),
-    amt:  parseInt(document.getElementById('m-amt').value),
-    bets: [],
-    sets: [],
-    winner: null
+    pA: { n:nA, w:parseInt(document.getElementById('add-wA').value)||0, l:parseInt(document.getElementById('add-lA').value)||0 },
+    pB: { n:nB, w:parseInt(document.getElementById('add-wB').value)||0, l:parseInt(document.getElementById('add-lB').value)||0 },
+    maxS: parseInt(document.getElementById('add-sets').value),
+    amt:  parseInt(document.getElementById('add-amt').value),
+    bets: [], sets: [], winner: null,
+    createdAt: Date.now()
   };
-
-  await set(GAME_REF, gameData);
-  toast('✅ 배팅 시작! QR을 공유하세요');
+  await push(GAMES, gameData);
+  closeM('modal-add');
+  toast(`✅ ${nA} vs ${nB} 등록 완료!`);
 }
-window.msGo = msGo;
+window.addGame = addGame;
 
-async function msLive() {
-  closeM('m-start');
-  await update(GAME_REF, { phase: 'live', sets: [] });
+// ── 게임 상세 열기 ──────────────────────────────
+function openMasterDetail(gameId) {
+  curGameId = gameId;
+  renderMasterDetail(allGames[gameId]);
+  showView('v-master-detail');
+}
+window.openMasterDetail = openMasterDetail;
+
+function goToList() { showView('v-master-list'); curGameId = null; }
+window.goToList = goToList;
+
+// ── 게임 상세 렌더 ──────────────────────────────
+function renderMasterDetail(g) {
+  if (!g) return;
+  const [bcls, blbl] = phaseBadge(g.phase);
+  const badge = document.getElementById('md-badge');
+  badge.className = 'badge ' + bcls; badge.textContent = blbl;
+
+  // 선수 정보
+  renderMdPlayers(g);
+
+  // 풀
+  renderMdPool(g);
+
+  // 설정 표시
+  const setLabels = { 4:'4세트 선취', 6:'6세트 선취' };
+  se('md-maxS-view', setLabels[g.maxS] || g.maxS + '세트');
+  se('md-amt-view', fmt(g.amt));
+
+  // 카드 표시/숨김
+  const isResult = g.phase === 'result';
+  const isLive   = g.phase === 'live';
+  const isBet    = g.phase === 'bet';
+
+  isLive   ? show('md-live-card')     : hide('md-live-card');
+  isResult ? show('md-result-card')   : hide('md-result-card');
+  isBet    ? show('md-settings-card') : hide('md-settings-card');
+
+  if (isLive)   renderMdScore(g);
+  if (isResult) renderMdResult(g);
+
+  // 액션 버튼
+  renderMdActions(g);
+}
+
+function renderMdPlayers(g) {
+  se('md-nA', g.pA.n); se('md-nB', g.pB.n);
+  se('md-rA', (g.pA.w+g.pA.l>0) ? `${g.pA.w}승 ${g.pA.l}패` : '전적 없음');
+  se('md-rB', (g.pB.w+g.pB.l>0) ? `${g.pB.w}승 ${g.pB.l}패` : '전적 없음');
+  const [pA, pB] = calcProb(g.pA.w, g.pA.l, g.pB.w, g.pB.l);
+  document.getElementById('md-pba').style.width = pA + '%';
+  document.getElementById('md-pbb').style.width = pB + '%';
+  se('md-pA', pA+'%'); se('md-pB', pB+'%');
+}
+
+function renderMdPool(g) {
+  const bets = g.bets || [], od = calcOdds(bets, g.amt);
+  se('md-llA', g.pA.n); se('md-llB', g.pB.n);
+  se('md-plA', fmt(od.pA)); se('md-plB', fmt(od.pB));
+  se('md-rtA', od.rA>0 ? `이기면 ${fmt(od.rA)}` : '첫 배팅 대기');
+  se('md-rtB', od.rB>0 ? `이기면 ${fmt(od.rB)}` : '첫 배팅 대기');
+  const el = document.getElementById('md-bl');
+  if (!el) return;
+  el.innerHTML = bets.length
+    ? bets.map(b => {
+        const tn = b.t==='A' ? g.pA.n : g.pB.n;
+        return `<div class="bitem b${b.t.toLowerCase()}"><span class="bname">${b.n}</span><span class="btag">${tn}</span></div>`;
+      }).join('')
+    : '<p style="color:var(--muted);font-size:12px;text-align:center;padding:8px">아직 배팅한 사람이 없어요</p>';
+}
+
+function renderMdScore(g) {
+  const sets = g.sets || [], target = targetSets(g);
+  const sA = sets.filter(s=>s.a>s.b).length, sB = sets.filter(s=>s.b>s.a).length;
+  se('md-lnA', g.pA.n); se('md-lnB', g.pB.n);
+  se('md-sinA', g.pA.n); se('md-sinB', g.pB.n);
+  se('md-lsA', sA); se('md-lsB', sB);
+  document.getElementById('md-ssA').innerHTML = sets.map(s=>`<span class="spip ${s.a>s.b?'w':''}">${s.a}-${s.b}</span>`).join('');
+  document.getElementById('md-ssB').innerHTML = '';
+  const needA = Math.max(0, target-sA), needB = Math.max(0, target-sB);
+  se('md-target-info', `${target}세트 선취제 · ${g.pA.n} 앞으로 ${needA}세트, ${g.pB.n} 앞으로 ${needB}세트`);
+  se('md-setlbl', `${sets.length+1}세트 게임 스코어`);
+  renderLPoolMd(g);
+}
+
+function renderLPoolMd(g) {
+  const bets = g.bets||[], od = calcOdds(bets, g.amt);
+  se('md-lllA', g.pA.n); se('md-lllB', g.pB.n);
+  se('md-lplA', fmt(od.pA)); se('md-lplB', fmt(od.pB));
+  se('md-lrtA', od.rA>0?`이기면 ${fmt(od.rA)}`:'—');
+  se('md-lrtB', od.rB>0?`이기면 ${fmt(od.rB)}`:'—');
+  const el = document.getElementById('md-lbl');
+  if (!el) return;
+  el.innerHTML = bets.map(b=>{
+    const tn=b.t==='A'?g.pA.n:g.pB.n;
+    return `<div class="bitem b${b.t.toLowerCase()}"><span class="bname">${b.n}</span><span class="btag">${tn}</span></div>`;
+  }).join('') || '<p style="color:var(--muted);font-size:12px;text-align:center;padding:8px">배팅 없음</p>';
+}
+
+function renderMdResult(g) {
+  const w = g.winner==='A'?g.pA:g.pB;
+  const sA=(g.sets||[]).filter(s=>s.a>s.b).length, sB=(g.sets||[]).filter(s=>s.b>s.a).length;
+  se('md-rw', `${w.n} 승리!`);
+  se('md-rs', `${g.maxS}세트 선취제 · ${sA}:${sB}  |  ${(g.sets||[]).map((s,i)=>`${i+1}세트 ${s.a}-${s.b}`).join(', ')}`);
+  const bets=g.bets||[], od=calcOdds(bets,g.amt), rw=g.winner==='A'?od.rA:od.rB;
+  document.getElementById('md-rl').innerHTML = bets.length
+    ? bets.map(bx=>{
+        const won=bx.t===g.winner, tn=bx.t==='A'?g.pA.n:g.pB.n;
+        return `<div class="ritem ${won?'won':'lost'}"><div><div class="rname">${bx.n}</div><div class="rteam">${tn}팀 배팅</div></div><div class="ramt">${won?'+'+fmt(rw):'-'+fmt(g.amt)}</div></div>`;
+      }).join('')
+    : '<p style="color:var(--muted);text-align:center;padding:10px">배팅 참여자 없음</p>';
+  const wins=bets.filter(bx=>bx.t===g.winner).length;
+  document.getElementById('md-rs2').innerHTML = `
+    <div class="statrow"><span class="statlbl">총 배팅금</span><span class="statval">${fmt(od.tot)}</span></div>
+    <div class="statrow"><span class="statlbl">승리 배당</span><span class="statval" style="color:var(--green)">${fmt(rw)}</span></div>
+    <div class="statrow"><span class="statlbl">맞춘 사람</span><span class="statval">${wins}명</span></div>
+    <div class="statrow"><span class="statlbl">틀린 사람</span><span class="statval">${bets.length-wins}명</span></div>`;
+}
+
+function renderMdActions(g) {
+  const el = document.getElementById('md-actions');
+  if (!el) return;
+  if (g.phase === 'bet') {
+    el.innerHTML = `
+      <button class="btn btn-g" style="margin-bottom:8px" onclick="openM('modal-start')">▶️ 게임 시작</button>
+      <button class="btn btn-r" onclick="openM('modal-delete')">🗑️ 게임 삭제</button>`;
+  } else if (g.phase === 'live') {
+    el.innerHTML = `<button class="btn btn-orange" onclick="mdEnd()">🏁 게임 종료</button>`;
+  } else if (g.phase === 'result') {
+    el.innerHTML = `
+      <button class="btn btn-gold" style="margin-bottom:8px" onclick="shareImg()">📤 결과 이미지 저장</button>
+      <button class="btn btn-r" onclick="openM('modal-delete')">🗑️ 게임 삭제</button>`;
+  }
+}
+
+// ── 수정 기능 ──────────────────────────────────
+function toggleEditPlayers() {
+  const g = allGames[curGameId];
+  const isHidden = document.getElementById('md-player-edit').classList.contains('hidden');
+  if (isHidden) {
+    // 현재 값 채우기
+    document.getElementById('ed-nA').value = g.pA.n;
+    document.getElementById('ed-wA').value = g.pA.w;
+    document.getElementById('ed-lA').value = g.pA.l;
+    document.getElementById('ed-nB').value = g.pB.n;
+    document.getElementById('ed-wB').value = g.pB.w;
+    document.getElementById('ed-lB').value = g.pB.l;
+    show('md-player-edit'); hide('md-player-view');
+  } else {
+    hide('md-player-edit'); show('md-player-view');
+  }
+}
+window.toggleEditPlayers = toggleEditPlayers;
+
+async function saveEditPlayers() {
+  const nA = document.getElementById('ed-nA').value.trim();
+  const nB = document.getElementById('ed-nB').value.trim();
+  if (!nA || !nB) { toast('❌ 이름을 입력하세요', true); return; }
+  await update(ref(db, `games/${curGameId}`), {
+    pA: { n:nA, w:parseInt(document.getElementById('ed-wA').value)||0, l:parseInt(document.getElementById('ed-lA').value)||0 },
+    pB: { n:nB, w:parseInt(document.getElementById('ed-wB').value)||0, l:parseInt(document.getElementById('ed-lB').value)||0 }
+  });
+  hide('md-player-edit'); show('md-player-view');
+  toast('✅ 선수 정보 저장됨');
+}
+window.saveEditPlayers = saveEditPlayers;
+
+function toggleEditSettings() {
+  const g = allGames[curGameId];
+  const isHidden = document.getElementById('md-settings-edit').classList.contains('hidden');
+  if (isHidden) {
+    document.getElementById('ed-sets').value = g.maxS;
+    document.getElementById('ed-amt').value = g.amt;
+    show('md-settings-edit');
+  } else {
+    hide('md-settings-edit');
+  }
+}
+window.toggleEditSettings = toggleEditSettings;
+
+async function saveEditSettings() {
+  await update(ref(db, `games/${curGameId}`), {
+    maxS: parseInt(document.getElementById('ed-sets').value),
+    amt:  parseInt(document.getElementById('ed-amt').value)
+  });
+  hide('md-settings-edit');
+  toast('✅ 설정 저장됨');
+}
+window.saveEditSettings = saveEditSettings;
+
+// ── 게임 시작/종료/삭제 ───────────────────────
+async function startGameConfirmed() {
+  closeM('modal-start');
+  await update(ref(db, `games/${curGameId}`), { phase:'live', sets:[] });
   toast('🎾 게임 시작!');
 }
-window.msLive = msLive;
+window.startGameConfirmed = startGameConfirmed;
 
-async function msSet() {
-  const a = parseInt(document.getElementById('m-saS').value);
-  const b = parseInt(document.getElementById('m-sbS').value);
-  if (isNaN(a) || isNaN(b)) { toast('❌ 스코어를 입력하세요'); return; }
-  if (a === b)               { toast('❌ 동점은 없어요'); return; }
-  const sets = [...(G.sets || []), { a, b }];
-  await update(GAME_REF, { sets });
-  document.getElementById('m-saS').value = '';
-  document.getElementById('m-sbS').value = '';
-  toast(`✅ ${sets.length}세트 확정: ${a} - ${b}`);
+async function mdSet() {
+  const a = parseInt(document.getElementById('md-saS').value);
+  const b = parseInt(document.getElementById('md-sbS').value);
+  if (isNaN(a)||isNaN(b)) { toast('❌ 스코어를 입력하세요', true); return; }
+  if (a===b)               { toast('❌ 테니스 세트는 동점이 없어요', true); return; }
+  const g    = allGames[curGameId];
+  const sets = [...(g.sets||[]), {a,b}];
+  const target = targetSets(g);
+  const sA = sets.filter(s=>s.a>s.b).length, sB = sets.filter(s=>s.b>s.a).length;
+  await update(ref(db, `games/${curGameId}`), { sets });
+  document.getElementById('md-saS').value = '';
+  document.getElementById('md-sbS').value = '';
+  toast(`✅ ${sets.length}세트: ${a}-${b} (${g.pA.n} ${sA}:${sB} ${g.pB.n})`);
+  const auto = checkWinner(sets, target);
+  if (auto) {
+    setTimeout(async () => {
+      const wName = auto==='A' ? g.pA.n : g.pB.n;
+      await update(ref(db, `games/${curGameId}`), { phase:'result', winner:auto });
+      confetti(); toast(`🏆 ${wName} ${target}세트 선취! 자동 종료!`);
+    }, 500);
+  }
 }
-window.msSet = msSet;
+window.mdSet = mdSet;
 
-async function msEnd() {
-  const sets = G.sets || [];
-  const sA = sets.filter(s => s.a > s.b).length;
-  const sB = sets.filter(s => s.b > s.a).length;
-  if (!sA && !sB)  { toast('❌ 세트를 먼저 입력하세요'); return; }
-  if (sA === sB)   { toast('⚠️ 동점, 세트를 더 입력하세요'); return; }
-  const winner = sA > sB ? 'A' : 'B';
-  await update(GAME_REF, { phase: 'result', winner });
+async function mdUndoSet() {
+  const g = allGames[curGameId];
+  const sets = [...(g.sets||[])];
+  if (!sets.length) { toast('취소할 세트가 없어요', true); return; }
+  sets.pop();
+  await update(ref(db, `games/${curGameId}`), { sets });
+  toast('↩ 마지막 세트 취소됨');
+}
+window.mdUndoSet = mdUndoSet;
+
+async function mdEnd() {
+  const g = allGames[curGameId];
+  const sets = g.sets||[];
+  const sA = sets.filter(s=>s.a>s.b).length, sB = sets.filter(s=>s.b>s.a).length;
+  if (!sets.length) { toast('❌ 세트를 먼저 입력하세요', true); return; }
+  if (sA===sB)      { toast(`⚠️ ${sA}:${sB} 동점 — 승부가 나지 않았어요`, true); return; }
+  const winner = sA>sB?'A':'B';
+  await update(ref(db, `games/${curGameId}`), { phase:'result', winner });
   confetti();
 }
-window.msEnd = msEnd;
+window.mdEnd = mdEnd;
 
-async function msNew() {
-  await remove(GAME_REF);
+async function deleteGameConfirmed() {
+  closeM('modal-delete');
+  await remove(ref(db, `games/${curGameId}`));
+  goToList();
+  toast('🗑️ 게임 삭제됨');
 }
-window.msNew = msNew;
+window.deleteGameConfirmed = deleteGameConfirmed;
 
-function msTab(t) {
-  ['setup', 'bet', 'live', 'result'].forEach(x => {
-    const el = document.getElementById('ms-' + x);
-    if (el) el.style.display = x === t ? 'block' : 'none';
-  });
+// ──────────────────────────────────────────────
+// BET-ONLY: 게임 목록
+// ──────────────────────────────────────────────
+function renderBetList(games) {
+  const ids = Object.keys(games||{});
+  const el  = document.getElementById('bl-list');
+  const now = new Date().toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit'});
+  se('bl-updated', now + ' 기준');
+
+  const active = ids.filter(id => games[id].phase !== 'done');
+  if (!active.length) {
+    el.innerHTML = `<div class="empty-state"><div class="wi">⏳</div><p style="font-size:13px;color:var(--muted);margin-top:12px">진행 중인 게임이 없어요.<br>운영자가 등록하면 나타납니다.</p></div>`;
+    return;
+  }
+  const sorted = active.sort((a,b)=>(games[b].createdAt||0)-(games[a].createdAt||0));
+  el.innerHTML = sorted.map(id => {
+    const g = games[id];
+    const [cls, lbl] = phaseBadge(g.phase);
+    const bets = g.bets||[], od = calcOdds(bets, g.amt);
+    const sA = (g.sets||[]).filter(s=>s.a>s.b).length, sB = (g.sets||[]).filter(s=>s.b>s.a).length;
+    const scoreDisp = (g.phase==='live'||g.phase==='result')
+      ? `<span style="font-weight:700;color:var(--green)">${sA}</span><span style="color:var(--muted)"> : </span><span style="font-weight:700;color:var(--red)">${sB}</span>` : '';
+    return `<div class="game-card phase-${g.phase}" onclick="openBetDetail('${id}')">
+      <div class="gc-top">
+        <span class="gc-title">${g.pA.n} vs ${g.pB.n}</span>
+        ${scoreDisp ? `<span class="gc-score">${scoreDisp}</span>` : ''}
+        <span class="badge ${cls}">${lbl}</span>
+      </div>
+      <div class="gc-players">
+        <span class="gc-pa">${g.pA.n}</span><span class="gc-vs">VS</span><span class="gc-pb">${g.pB.n}</span>
+      </div>
+      <div class="gc-meta">
+        <span class="gc-tag">🎰 ${bets.length}명 배팅</span>
+        <span class="gc-tag">💰 ${fmt(od.tot)}</span>
+        <span class="gc-tag">🎾 ${g.maxS}세트 선취</span>
+      </div>
+    </div>`;
+  }).join('');
 }
 
-// ────────────────────────────────────────────
-// BET-ONLY 동작
-// ────────────────────────────────────────────
-function boSel(t) {
-  boTeam = t;
-  document.getElementById('b-btnA').className = 'tbtn' + (t === 'A' ? ' sA' : '');
-  document.getElementById('b-btnB').className = 'tbtn' + (t === 'B' ? ' sB' : '');
+// ── 참가자 상세 ────────────────────────────────
+function openBetDetail(gameId) {
+  bdGameId = gameId;
+  bdDone   = false;
+  bdTeam   = null;
+  const g  = allGames[gameId];
+  se('bd-title', `${g.pA.n} vs ${g.pB.n}`);
+  renderBetDetail(g);
+  showView('v-bet-detail');
 }
-window.boSel = boSel;
+window.openBetDetail = openBetDetail;
 
-async function boPlace() {
-  const name = document.getElementById('b-name').value.trim();
-  if (!name)   { toast('❌ 이름을 입력하세요'); return; }
-  if (!boTeam) { toast('❌ 팀을 선택하세요'); return; }
-  if (boDone)  { toast('⚠️ 이미 배팅하셨어요!'); return; }
+function goToBetList() { showView('v-bet-list'); bdGameId = null; }
+window.goToBetList = goToBetList;
 
-  // 최신 데이터 확인
-  const snap = await get(GAME_REF);
+function renderBetDetail(g) {
+  if (!g) return;
+  const [bcls, blbl] = phaseBadge(g.phase);
+  const badge = document.getElementById('bd-badge');
+  badge.className = 'badge '+bcls; badge.textContent = blbl;
+
+  ['bd-waiting','bd-bview','bd-lview','bd-rview'].forEach(hide);
+
+  if (g.phase==='bet') {
+    show('bd-bview');
+    renderBdBet(g);
+    if (!bdDone) { show('bd-form'); hide('bd-done'); }
+  } else if (g.phase==='live') {
+    show('bd-lview');
+    renderBdLive(g);
+  } else if (g.phase==='result') {
+    show('bd-rview');
+    renderBdResult(g);
+  } else {
+    show('bd-waiting');
+  }
+}
+
+function renderBdBet(g) {
+  const [pA, pB] = calcProb(g.pA.w,g.pA.l,g.pB.w,g.pB.l);
+  se('bd-nA',g.pA.n); se('bd-nB',g.pB.n);
+  se('bd-rA',(g.pA.w+g.pA.l>0)?`${g.pA.w}승 ${g.pA.l}패`:'전적 없음');
+  se('bd-rB',(g.pB.w+g.pB.l>0)?`${g.pB.w}승 ${g.pB.l}패`:'전적 없음');
+  document.getElementById('bd-pba').style.width = pA+'%';
+  document.getElementById('bd-pbb').style.width = pB+'%';
+  se('bd-pA',pA+'%'); se('bd-pB',pB+'%');
+  se('bd-amt',fmt(g.amt));
+  se('bd-bnA',g.pA.n); se('bd-bnB',g.pB.n);
+  const od = calcOdds(g.bets||[],g.amt);
+  se('bd-odA',od.oA!=='—'?`배당 x${od.oA}`:'배당 —');
+  se('bd-odB',od.oB!=='—'?`배당 x${od.oB}`:'배당 —');
+  renderBdPool('bd-',g,true);
+}
+
+function renderBdLive(g) {
+  const sets=g.sets||[], target=targetSets(g);
+  const sA=sets.filter(s=>s.a>s.b).length, sB=sets.filter(s=>s.b>s.a).length;
+  se('bd-lnA',g.pA.n); se('bd-lnB',g.pB.n);
+  se('bd-lsA',sA); se('bd-lsB',sB);
+  document.getElementById('bd-ssA').innerHTML=sets.map(s=>`<span class="spip ${s.a>s.b?'w':''}">${s.a}-${s.b}</span>`).join('');
+  document.getElementById('bd-ssB').innerHTML='';
+  const needA=Math.max(0,target-sA), needB=Math.max(0,target-sB);
+  se('bd-target-info',`${target}세트 선취제 · ${g.pA.n} 앞으로 ${needA}세트, ${g.pB.n} 앞으로 ${needB}세트`);
+  renderBdLPool('bd-',g,true);
+}
+
+function renderBdResult(g) {
+  const w=g.winner==='A'?g.pA:g.pB;
+  const sA=(g.sets||[]).filter(s=>s.a>s.b).length, sB=(g.sets||[]).filter(s=>s.b>s.a).length;
+  se('bd-rw',`${w.n} 승리!`);
+  se('bd-rs',`${g.maxS}세트 선취제 · ${sA}:${sB}  |  ${(g.sets||[]).map((s,i)=>`${i+1}세트 ${s.a}-${s.b}`).join(', ')}`);
+  const bets=g.bets||[], od=calcOdds(bets,g.amt), rw=g.winner==='A'?od.rA:od.rB;
+  document.getElementById('bd-rl').innerHTML = bets.length
+    ? bets.map(bx=>{
+        const won=bx.t===g.winner, tn=bx.t==='A'?g.pA.n:g.pB.n;
+        return `<div class="ritem ${won?'won':'lost'}"><div><div class="rname">${bx.n}</div><div class="rteam">${tn}팀 배팅</div></div><div class="ramt">${won?'+'+fmt(rw):'-'+fmt(g.amt)}</div></div>`;
+      }).join('')
+    : '<p style="color:var(--muted);text-align:center;padding:10px">배팅 참여자 없음</p>';
+}
+
+function renderBdPool(px, g, anon) {
+  const bets=g.bets||[], od=calcOdds(bets,g.amt);
+  se(px+'llA',g.pA.n); se(px+'llB',g.pB.n);
+  se(px+'plA',fmt(od.pA)); se(px+'plB',fmt(od.pB));
+  se(px+'rtA',od.rA>0?`이기면 ${fmt(od.rA)}`:'첫 배팅 대기');
+  se(px+'rtB',od.rB>0?`이기면 ${fmt(od.rB)}`:'첫 배팅 대기');
+  const el=document.getElementById(px+'bl'); if(!el)return;
+  el.innerHTML = bets.length
+    ? bets.map(b=>{const dn=anon?mask(b.n):b.n,tn=b.t==='A'?g.pA.n:g.pB.n;return`<div class="bitem b${b.t.toLowerCase()}"><span class="bname">${dn}</span><span class="btag">${tn}</span></div>`;}).join('')
+    : '<p style="color:var(--muted);font-size:12px;text-align:center;padding:8px">아직 배팅한 사람이 없어요</p>';
+}
+function renderBdLPool(px, g, anon) {
+  const bets=g.bets||[], od=calcOdds(bets,g.amt);
+  se(px+'lllA',g.pA.n); se(px+'lllB',g.pB.n);
+  se(px+'lplA',fmt(od.pA)); se(px+'lplB',fmt(od.pB));
+  se(px+'lrtA',od.rA>0?`이기면 ${fmt(od.rA)}`:'—');
+  se(px+'lrtB',od.rB>0?`이기면 ${fmt(od.rB)}`:'—');
+  const el=document.getElementById(px+'lbl'); if(!el)return;
+  el.innerHTML = bets.map(b=>{const dn=anon?mask(b.n):b.n,tn=b.t==='A'?g.pA.n:g.pB.n;return`<div class="bitem b${b.t.toLowerCase()}"><span class="bname">${dn}</span><span class="btag">${tn}</span></div>`;}).join('')
+    || '<p style="color:var(--muted);font-size:12px;text-align:center;padding:8px">배팅 없음</p>';
+}
+
+// ── 배팅 등록 ──────────────────────────────────
+function bdSel(t) {
+  bdTeam = t;
+  document.getElementById('bd-btnA').className = 'tbtn'+(t==='A'?' sA':'');
+  document.getElementById('bd-btnB').className = 'tbtn'+(t==='B'?' sB':'');
+}
+window.bdSel = bdSel;
+
+async function bdPlace() {
+  const name = document.getElementById('bd-myname').value.trim();
+  if (!name)   { toast('❌ 이름을 입력하세요', true); return; }
+  if (!bdTeam) { toast('❌ 팀을 선택하세요', true); return; }
+  if (bdDone)  { toast('⚠️ 이미 배팅하셨어요!', true); return; }
+
+  const snap = await get(ref(db, `games/${bdGameId}`));
   const cur  = snap.val();
-  if (!cur || cur.phase !== 'bet') { toast('❌ 배팅이 마감됐어요'); return; }
-
-  const bets = cur.bets || [];
-  if (bets.find(b => b.n === name)) { toast('⚠️ 이미 같은 이름으로 배팅됐어요'); return; }
-
-  bets.push({ n: name, t: boTeam, ts: Date.now() });
-  await update(GAME_REF, { bets });
-
-  boDone = true;
-  const tn = boTeam === 'A' ? cur.pA.n : cur.pB.n;
-  se('b-donemsg', `${tn}팀에 배팅 완료! 🎾`);
-  document.getElementById('b-form').style.display = 'none';
-  document.getElementById('b-done').style.display = 'block';
+  if (!cur || cur.phase!=='bet') { toast('❌ 배팅이 마감됐어요', true); return; }
+  const bets = cur.bets||[];
+  if (bets.find(b=>b.n===name)) { toast('⚠️ 이미 같은 이름으로 배팅됐어요', true); return; }
+  bets.push({ n:name, t:bdTeam, ts:Date.now() });
+  await update(ref(db, `games/${bdGameId}`), { bets });
+  bdDone = true;
+  const tn = bdTeam==='A'?cur.pA.n:cur.pB.n;
+  se('bd-donemsg', `${tn}팀에 배팅 완료! 🎾`);
+  hide('bd-form'); show('bd-done');
   toast(`✅ ${name}님 배팅 완료!`);
 }
-window.boPlace = boPlace;
+window.bdPlace = bdPlace;
 
-function boShowPhase(ph) {
-  ['waiting', 'bview', 'lview', 'rview'].forEach(v => {
-    const el = document.getElementById('bo-' + v);
-    if (el) el.style.display = 'none';
-  });
-  const map = { waiting: 'waiting', bet: 'bview', live: 'lview', result: 'rview' };
-  const target = document.getElementById('bo-' + (map[ph] || 'waiting'));
-  if (target) target.style.display = 'block';
+// ──────────────────────────────────────────────
+// Firebase 실시간 리스너
+// ──────────────────────────────────────────────
+onValue(GAMES, (snapshot) => {
+  allGames = snapshot.val() || {};
+  document.getElementById('loading').style.display = 'none';
+  syncOn('sync-ml'); syncOn('sync-md'); syncOn('sync-bl'); syncOn('sync-bd');
 
-  const bd = document.getElementById('bo-badge');
-  const bm = { waiting:['badge-bet','대기 중'], bet:['badge-bet','배팅 중'], live:['badge-live','LIVE'], result:['badge-done','종료'] };
-  if (bm[ph]) { bd.className = 'badge ' + bm[ph][0]; bd.textContent = bm[ph][1]; }
-}
-
-// ── 베팅 화면 렌더 ─────────────────────────
-function renderBetView(g) {
-  const [pA, pB] = calcProb(g.pA.w, g.pA.l, g.pB.w, g.pB.l);
-  se('b-nA', g.pA.n); se('b-nB', g.pB.n);
-  se('b-rA', (g.pA.w + g.pA.l > 0) ? `${g.pA.w}승 ${g.pA.l}패` : '전적 없음');
-  se('b-rB', (g.pB.w + g.pB.l > 0) ? `${g.pB.w}승 ${g.pB.l}패` : '전적 없음');
-  document.getElementById('b-pba').style.width = pA + '%';
-  document.getElementById('b-pbb').style.width = pB + '%';
-  se('b-pA', pA + '%'); se('b-pB', pB + '%');
-  se('b-amt', fmt(g.amt));
-  se('b-bnA', g.pA.n); se('b-bnB', g.pB.n);
-  const od = calcOdds(g.bets || [], g.amt);
-  se('b-odA', od.oA !== '—' ? `배당 x${od.oA}` : '배당 —');
-  se('b-odB', od.oB !== '—' ? `배당 x${od.oB}` : '배당 —');
-  renderPool('b-', g, true);
-}
-
-// ── 경기 중 화면 렌더 ─────────────────────
-function renderLiveView(g) {
-  se('b-lnA', g.pA.n); se('b-lnB', g.pB.n);
-  renderScore('b-', g);
-  renderLPool('b-', g, true);
-}
-
-// ── 결과 화면 렌더 ────────────────────────
-function renderResultView(el, g, anon) {
-  const w  = g.winner === 'A' ? g.pA : g.pB;
-  const sA = (g.sets || []).filter(s => s.a > s.b).length;
-  const sB = (g.sets || []).filter(s => s.b > s.a).length;
-  const pfx = el === 'b' ? 'b-' : 'm-';
-  se(pfx + 'rw', `${w.n} 승리!`);
-  se(pfx + 'rs', `세트: ${sA} - ${sB}  |  ${(g.sets||[]).map(s=>`${s.a}:${s.b}`).join(' ')}`);
-
-  const bets = g.bets || [];
-  const od   = calcOdds(bets, g.amt);
-  const rw   = g.winner === 'A' ? od.rA : od.rB;
-
-  const listId = pfx + 'rl';
-  const listEl = document.getElementById(listId);
-  if (!listEl) return;
-  listEl.innerHTML = bets.length
-    ? bets.map(bx => {
-        const won = bx.t === g.winner;
-        const tn  = bx.t === 'A' ? g.pA.n : g.pB.n;
-        const dn  = anon ? mask(bx.n) : bx.n;
-        return `<div class="ritem ${won ? 'won' : 'lost'}">
-          <div><div class="rname">${dn}</div><div class="rteam">${tn}팀 배팅</div></div>
-          <div class="ramt">${won ? '+' + fmt(rw) : '-' + fmt(g.amt)}</div>
-        </div>`;
-      }).join('')
-    : '<p style="color:var(--muted);text-align:center;padding:12px">배팅 참여자 없음</p>';
-
-  if (el === 'm') {
-    const wins = bets.filter(bx => bx.t === g.winner).length;
-    const statsEl = document.getElementById('m-rs2');
-    if (statsEl) statsEl.innerHTML = `
-      <div class="statrow"><span class="statlbl">총 배팅금</span><span class="statval">${fmt(od.tot)}</span></div>
-      <div class="statrow"><span class="statlbl">승리 배당</span><span class="statval" style="color:var(--green)">${fmt(rw)}</span></div>
-      <div class="statrow"><span class="statlbl">맞춘 사람</span><span class="statval">${wins}명</span></div>
-      <div class="statrow"><span class="statlbl">틀린 사람</span><span class="statval">${bets.length - wins}명</span></div>`;
-  }
-}
-
-// ────────────────────────────────────────────
-// Firebase 실시간 리스너 (핵심!)
-// ────────────────────────────────────────────
-function attachListener() {
-  onValue(GAME_REF, (snapshot) => {
-    G = snapshot.val();
-    syncDot(mode === 'master' ? 'ms-sync' : 'bo-sync', true);
-
-    if (mode === 'master') {
-      renderMasterFromG(G);
-    } else {
-      renderBetOnlyFromG(G);
+  if (mode === 'master') {
+    renderMasterList(allGames);
+    // 상세 화면이 열려 있으면 갱신
+    if (curGameId && allGames[curGameId]) {
+      renderMasterDetail(allGames[curGameId]);
+    } else if (curGameId && !allGames[curGameId]) {
+      goToList(); // 삭제된 게임이면 목록으로
     }
-  }, (err) => {
-    console.error(err);
-    syncDot('bo-sync', false);
-    syncDot('ms-sync', false);
-    toast('❌ 연결 오류');
-  });
-}
-
-function renderMasterFromG(g) {
-  const badge = document.getElementById('ms-badge');
-  if (!g) {
-    msTab('setup');
-    badge.className = 'badge badge-setup'; badge.textContent = '설정';
-    return;
-  }
-  if (g.phase === 'bet') {
-    msTab('bet');
-    badge.className = 'badge badge-bet'; badge.textContent = '배팅 중';
-    renderQR();
-    const [pA, pB] = calcProb(g.pA.w, g.pA.l, g.pB.w, g.pB.l);
-    se('m-dA', g.pA.n); se('m-dB', g.pB.n);
-    se('m-rA', (g.pA.w + g.pA.l > 0) ? `${g.pA.w}승 ${g.pA.l}패` : '전적 없음');
-    se('m-rB', (g.pB.w + g.pB.l > 0) ? `${g.pB.w}승 ${g.pB.l}패` : '전적 없음');
-    document.getElementById('m-pba').style.width = pA + '%';
-    document.getElementById('m-pbb').style.width = pB + '%';
-    se('m-pA', pA + '%'); se('m-pB', pB + '%');
-    renderPool('m-', g, false);
-  } else if (g.phase === 'live') {
-    msTab('live');
-    badge.className = 'badge badge-live'; badge.textContent = 'LIVE';
-    se('m-lnA', g.pA.n); se('m-lnB', g.pB.n);
-    se('m-sinA', g.pA.n); se('m-sinB', g.pB.n);
-    renderScore('m-', g);
-    se('m-setlbl', `${(g.sets||[]).length + 1}세트 입력`);
-    renderLPool('m-', g, false);
-  } else if (g.phase === 'result') {
-    msTab('result');
-    badge.className = 'badge badge-done'; badge.textContent = '종료';
-    renderResultView('m', g, false);
-  }
-}
-
-function renderBetOnlyFromG(g) {
-  if (!g || !g.phase) {
-    boShowPhase('waiting');
-    return;
-  }
-  if (g.phase === 'bet') {
-    boShowPhase('bet');
-    renderBetView(g);
-    if (!boDone) {
-      document.getElementById('b-form').style.display = 'block';
-      document.getElementById('b-done').style.display = 'none';
+  } else {
+    renderBetList(allGames);
+    // 참가자 상세 갱신
+    if (bdGameId && allGames[bdGameId]) {
+      renderBetDetail(allGames[bdGameId]);
     }
-  } else if (g.phase === 'live') {
-    boShowPhase('live');
-    renderLiveView(g);
-  } else if (g.phase === 'result') {
-    boShowPhase('result');
-    renderResultView('b', g, false); // 결과는 실명 공개
   }
-}
+}, (err) => {
+  document.getElementById('loading').innerHTML =
+    `<div style="color:var(--red);font-size:14px;padding:20px;text-align:center">❌ Firebase 연결 실패<br><small style="color:var(--muted)">${err.message}</small></div>`;
+});
 
-// ────────────────────────────────────────────
-// 결과 이미지 저장
-// ────────────────────────────────────────────
+// ──────────────────────────────────────────────
+// 결과 이미지
+// ──────────────────────────────────────────────
 async function shareImg() {
-  if (!G || !G.winner) { toast('❌ 결과가 없어요'); return; }
-  toast('🖼️ 이미지 생성 중...', 1500);
-  await new Promise(r => setTimeout(r, 150));
-
-  const cv  = document.getElementById('cv');
-  cv.style.display = 'block';
-  cv.width  = 720; cv.height = 1060;
-  const ctx = cv.getContext('2d');
-
-  const bgG = ctx.createLinearGradient(0, 0, 0, cv.height);
-  bgG.addColorStop(0, '#080c08'); bgG.addColorStop(1, '#0a140a');
-  ctx.fillStyle = bgG; ctx.fillRect(0, 0, cv.width, cv.height);
-
-  ctx.strokeStyle = '#141f14'; ctx.lineWidth = 1;
-  for (let i = 0; i < cv.width;  i += 36) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, cv.height); ctx.stroke(); }
-  for (let i = 0; i < cv.height; i += 36) { ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(cv.width, i);  ctx.stroke(); }
-
-  const A = G.pA, B = G.pB;
-  const w  = G.winner === 'A' ? A : B;
-  const sA = (G.sets||[]).filter(s => s.a > s.b).length;
-  const sB = (G.sets||[]).filter(s => s.b > s.a).length;
-  const od = calcOdds(G.bets || [], G.amt);
-  const rw = G.winner === 'A' ? od.rA : od.rB;
-  const now = new Date();
-
-  ctx.font = 'bold 26px sans-serif'; ctx.fillStyle = '#3ddc84'; ctx.textAlign = 'center';
-  ctx.fillText('🎾 테니스 배팅 결과', 360, 66);
-  ctx.font = '18px sans-serif'; ctx.fillStyle = '#5a7060';
-  ctx.fillText(now.toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric' }), 360, 96);
-
-  ctx.strokeStyle = '#1e2e1e'; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(40, 116); ctx.lineTo(680, 116); ctx.stroke();
-
-  ctx.font = 'bold 52px sans-serif'; ctx.fillStyle = '#f5c518'; ctx.textAlign = 'center';
-  ctx.fillText('🏆 ' + w.n + ' 승리!', 360, 195);
-
-  ctx.font = 'bold 36px sans-serif';
-  ctx.fillStyle = '#3ddc84'; ctx.fillText(A.n, 190, 260);
-  ctx.fillStyle = '#5a7060'; ctx.fillText('VS', 360, 260);
-  ctx.fillStyle = '#ff5f5f'; ctx.fillText(B.n, 530, 260);
-
-  ctx.font = 'bold 80px sans-serif';
-  ctx.fillStyle = '#3ddc84'; ctx.fillText(sA, 170, 365);
-  ctx.fillStyle = '#5a7060'; ctx.fillText(':', 360, 365);
-  ctx.fillStyle = '#ff5f5f'; ctx.fillText(sB, 550, 365);
-
-  ctx.font = '18px sans-serif'; ctx.fillStyle = '#5a7060';
-  ctx.fillText('세트별: ' + (G.sets||[]).map(s => `${s.a}:${s.b}`).join(' | '), 360, 410);
-
-  ctx.strokeStyle = '#1e2e1e';
-  ctx.beginPath(); ctx.moveTo(40, 434); ctx.lineTo(680, 434); ctx.stroke();
-
-  ctx.font = 'bold 22px sans-serif'; ctx.fillStyle = '#3ddc84'; ctx.textAlign = 'left';
-  ctx.fillText('💰 배팅 결과', 60, 472);
-
-  const bets = G.bets || [];
-  let y = 512;
-  const show = Math.min(bets.length, 9);
-  for (let i = 0; i < show; i++) {
-    const bx  = bets[i], won = bx.t === G.winner;
-    const tn  = bx.t === 'A' ? A.n : B.n;
-    ctx.fillStyle = won ? '#0a1f0a' : '#1f0a0a';
-    if (ctx.roundRect) { ctx.roundRect(40, y - 27, 640, 42, 6); ctx.fill(); }
-    else { ctx.fillRect(40, y - 27, 640, 42); }
-    ctx.font = 'bold 18px sans-serif'; ctx.fillStyle = won ? '#3ddc84' : '#ff5f5f';
-    ctx.textAlign = 'left'; ctx.fillText((won ? '✓ ' : '✗ ') + bx.n, 60, y);
-    ctx.font = '15px sans-serif'; ctx.fillStyle = '#5a7060'; ctx.fillText(tn + '팀', 270, y);
-    ctx.font = 'bold 18px sans-serif'; ctx.textAlign = 'right';
-    ctx.fillStyle = won ? '#3ddc84' : '#ff5f5f';
-    ctx.fillText(won ? '+' + fmtK(rw) : '-' + fmtK(G.amt), 660, y);
-    y += 50;
+  const g = bdGameId ? allGames[bdGameId] : (curGameId ? allGames[curGameId] : null);
+  if (!g || !g.winner) { toast('❌ 결과가 없어요', true); return; }
+  toast('🖼️ 이미지 생성 중...', false, 1500);
+  await new Promise(r=>setTimeout(r,150));
+  const cv=document.getElementById('cv');
+  cv.style.display='block'; cv.width=720; cv.height=1060;
+  const ctx=cv.getContext('2d');
+  const bg=ctx.createLinearGradient(0,0,0,cv.height);
+  bg.addColorStop(0,'#06090a'); bg.addColorStop(1,'#0a1214');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,cv.width,cv.height);
+  ctx.strokeStyle='#111a1e'; ctx.lineWidth=1;
+  for(let i=0;i<cv.width;i+=36){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,cv.height);ctx.stroke();}
+  for(let i=0;i<cv.height;i+=36){ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(cv.width,i);ctx.stroke();}
+  const A=g.pA,B=g.pB,w=g.winner==='A'?A:B;
+  const sA=(g.sets||[]).filter(s=>s.a>s.b).length,sB=(g.sets||[]).filter(s=>s.b>s.a).length;
+  const od=calcOdds(g.bets||[],g.amt),rw=g.winner==='A'?od.rA:od.rB;
+  const now=new Date();
+  ctx.font='bold 26px sans-serif'; ctx.fillStyle='#3ddc84'; ctx.textAlign='center'; ctx.fillText('🎾 테니스 배팅 결과',360,66);
+  ctx.font='17px sans-serif'; ctx.fillStyle='#4a6872'; ctx.fillText(now.toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'}),360,94);
+  ctx.strokeStyle='#1a2830'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(40,114); ctx.lineTo(680,114); ctx.stroke();
+  ctx.font='bold 50px sans-serif'; ctx.fillStyle='#f5c518'; ctx.fillText('🏆 '+w.n+' 승리!',360,190);
+  ctx.font='bold 34px sans-serif'; ctx.fillStyle='#3ddc84'; ctx.fillText(A.n,190,254); ctx.fillStyle='#4a6872'; ctx.fillText('VS',360,254); ctx.fillStyle='#ff5f5f'; ctx.fillText(B.n,530,254);
+  ctx.font='bold 78px sans-serif'; ctx.fillStyle='#3ddc84'; ctx.fillText(sA,170,360); ctx.fillStyle='#4a6872'; ctx.fillText(':',360,360); ctx.fillStyle='#ff5f5f'; ctx.fillText(sB,550,360);
+  ctx.font='17px sans-serif'; ctx.fillStyle='#4a6872'; ctx.fillText(`${g.maxS}세트 선취 · ${(g.sets||[]).map(s=>`${s.a}-${s.b}`).join(' | ')}`,360,404);
+  ctx.strokeStyle='#1a2830'; ctx.beginPath(); ctx.moveTo(40,428); ctx.lineTo(680,428); ctx.stroke();
+  ctx.font='bold 21px sans-serif'; ctx.fillStyle='#3ddc84'; ctx.textAlign='left'; ctx.fillText('💰 배팅 결과',60,465);
+  const bets=g.bets||[]; let y=505; const show2=Math.min(bets.length,9);
+  for(let i=0;i<show2;i++){
+    const bx=bets[i],won=bx.t===g.winner,tn=bx.t==='A'?A.n:B.n;
+    ctx.fillStyle=won?'#081a0e':'#180808';
+    if(ctx.roundRect){ctx.roundRect(40,y-26,640,41,6);ctx.fill();}else{ctx.fillRect(40,y-26,640,41);}
+    ctx.font='bold 17px sans-serif'; ctx.fillStyle=won?'#3ddc84':'#ff5f5f'; ctx.textAlign='left'; ctx.fillText((won?'✓ ':'✗ ')+bx.n,60,y);
+    ctx.font='14px sans-serif'; ctx.fillStyle='#4a6872'; ctx.fillText(tn+'팀',265,y);
+    ctx.font='bold 17px sans-serif'; ctx.textAlign='right'; ctx.fillStyle=won?'#3ddc84':'#ff5f5f'; ctx.fillText(won?'+'+fmtK(rw):'-'+fmtK(g.amt),660,y); y+=49;
   }
-  if (bets.length > 9) {
-    ctx.font = '15px sans-serif'; ctx.fillStyle = '#5a7060'; ctx.textAlign = 'center';
-    ctx.fillText('... 외 ' + (bets.length - 9) + '명', 360, y + 10);
-  }
-
-  ctx.font = '15px sans-serif'; ctx.fillStyle = '#1e2e1e'; ctx.textAlign = 'center';
-  ctx.fillText('🎾 테니스 배팅', 360, cv.height - 24);
-  cv.style.display = 'none';
-
-  const lk = document.createElement('a');
-  lk.download = `테니스배팅_${w.n}승리.png`;
-  lk.href = cv.toDataURL('image/png');
-  lk.click();
+  if(bets.length>9){ctx.font='14px sans-serif';ctx.fillStyle='#4a6872';ctx.textAlign='center';ctx.fillText('... 외 '+(bets.length-9)+'명',360,y+8);}
+  ctx.font='14px sans-serif'; ctx.fillStyle='#1a2830'; ctx.textAlign='center'; ctx.fillText('🎾 테니스 배팅',360,cv.height-22);
+  cv.style.display='none';
+  const lk=document.createElement('a'); lk.download=`테니스배팅_${w.n}승리.png`; lk.href=cv.toDataURL('image/png'); lk.click();
   toast('🎉 이미지 저장 완료!');
 }
 window.shareImg = shareImg;
 
-// ────────────────────────────────────────────
-// 콘페티
-// ────────────────────────────────────────────
+// ── 콘페티 ────────────────────────────────────
 function confetti() {
-  const cols = ['#3ddc84','#f5c518','#ff5f5f','#60a5fa','#a78bfa'];
-  for (let i = 0; i < 60; i++) {
-    setTimeout(() => {
-      const el = document.createElement('div');
-      el.className = 'cf';
-      el.style.left = Math.random() * 100 + 'vw';
-      el.style.background = cols[Math.floor(Math.random() * cols.length)];
-      el.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
-      el.style.animationDelay    = Math.random() * 0.5 + 's';
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 4000);
-    }, i * 25);
-  }
+  const cols=['#3ddc84','#f5c518','#ff5f5f','#5ba3f5','#a78bfa'];
+  for(let i=0;i<60;i++) setTimeout(()=>{
+    const el=document.createElement('div'); el.className='cf';
+    el.style.left=Math.random()*100+'vw';
+    el.style.background=cols[Math.floor(Math.random()*cols.length)];
+    el.style.animationDuration=(Math.random()*2+1.5)+'s';
+    el.style.animationDelay=Math.random()*.5+'s';
+    document.body.appendChild(el); setTimeout(()=>el.remove(),4000);
+  },i*25);
 }
 
-// ────────────────────────────────────────────
-// 초기화
-// ────────────────────────────────────────────
-(async () => {
-  const params = new URLSearchParams(window.location.search);
-  mode = params.get('mode') === 'bet' ? 'betonly' : 'master';
-
-  if (mode === 'betonly') {
-    document.getElementById('sc-bet').classList.add('on');
-  } else {
-    document.getElementById('sc-master').classList.add('on');
-  }
-
-  // 리스너 붙이면 바로 데이터 도착 → 로딩 숨김
-  onValue(GAME_REF, (snapshot) => {
-    document.getElementById('loading').style.display = 'none';
-    G = snapshot.val();
-    syncDot(mode === 'master' ? 'ms-sync' : 'bo-sync', true);
-    if (mode === 'master') renderMasterFromG(G);
-    else renderBetOnlyFromG(G);
-  }, (err) => {
-    document.getElementById('loading').innerHTML =
-      `<div style="color:var(--red);font-size:15px;padding:20px;text-align:center">
-        ❌ Firebase 연결 실패<br><small style="color:var(--muted)">${err.message}</small>
-       </div>`;
-  });
+// ── 초기화 ────────────────────────────────────
+(()=>{
+  const p = new URLSearchParams(window.location.search);
+  mode = p.get('mode')==='bet' ? 'betonly' : 'master';
+  showView(mode==='betonly' ? 'v-bet-list' : 'v-master-list');
 })();
 
-// 모달 배경 클릭 닫기
 document.querySelectorAll('.mov').forEach(el =>
-  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); })
+  el.addEventListener('click', e => { if(e.target===el) el.classList.remove('open'); })
 );
-
 </script>
 </body>
 </html>
